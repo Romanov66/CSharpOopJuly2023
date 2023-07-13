@@ -2,11 +2,11 @@
 {
     public class Square : IShape
     {
-        public double Height { get; set; }
+        public double sideLenght { get; set; }
 
         public Square(double height)
         {
-            Height = height;
+            sideLenght = sideLenght;
         }
 
         public string GetShapeType()
@@ -16,22 +16,22 @@
 
         public double GetHeight()
         {
-            return Height;
+            return sideLenght;
         }
 
         public double GetWidth()
         {
-            return Height;
+            return sideLenght;
         }
 
         public double GetArea()
         {
-            return Height * Height;
+            return sideLenght * sideLenght;
         }
 
         public double GetPerimeter()
         {
-            return Height * 4;
+            return sideLenght * 4;
         }
     }
 }
