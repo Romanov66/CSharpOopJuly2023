@@ -24,12 +24,12 @@
             Y3 = y3;
         }
 
-        public override string GetShapeType()
+        public string GetShapeType()
         {
             return "Треугольник";
         }
 
-        public override double GetWidth()
+        public double GetWidth()
         {
             double[] xCoordinates = { X1, X2, X3 };
 
@@ -56,7 +56,7 @@
             return maxX - minX;
         }
 
-        public override double GetHeight()
+        public double GetHeight()
         {
             double[] xCoordinates = { Y1, Y2, Y3 };
 
@@ -83,7 +83,7 @@
             return maxY - minY;
         }
 
-        public override double GetArea()
+        public double GetArea()
         {
             double side1Length = Math.Abs(Math.Sqrt((X2 - X1) * (X2 - X1) + (Y2 - Y1) * (Y2 - Y1)));
             double side2Length = Math.Abs(Math.Sqrt((X3 - X1) * (X3 - X1) + (Y3 - Y1) * (Y3 - Y1)));
@@ -94,7 +94,7 @@
             return Math.Sqrt(triangleSemiPerimeter * (triangleSemiPerimeter - side1Length) * (triangleSemiPerimeter - side2Length) * (triangleSemiPerimeter - side3Length));
         }
 
-        public override double GetPerimeter()
+        public double GetPerimeter()
         {
             double side1Length = Math.Abs(Math.Sqrt((X2 - X1) * (X2 - X1) + (Y2 - Y1) * (Y2 - Y1)));
             double side2Length = Math.Abs(Math.Sqrt((X3 - X1) * (X3 - X1) + (Y3 - Y1) * (Y3 - Y1)));

@@ -12,27 +12,27 @@
             Width = width;
         }
 
-        public override string GetShapeType()
+        public string GetShapeType()
         {
             return "Прямоугольник";
         }
 
-        public override double GetHeight()
+        public double GetHeight()
         {
             return Height;
         }
 
-        public override double GetWidth()
+        public double GetWidth()
         {
             return Width;
         }
 
-        public override double GetArea()
+        public double GetArea()
         {
             return Height * Width;
         }
 
-        public override double GetPerimeter()
+        public double GetPerimeter()
         {
             return (Height + Width) * 2;
         }

@@ -9,27 +9,27 @@
             Height = height;
         }
 
-        public override string GetShapeType()
+        public string GetShapeType()
         {
             return "Квадрат";
         }
 
-        public override double GetHeight()
+        public double GetHeight()
         {
             return Height;
         }
 
-        public override double GetWidth()
+        public double GetWidth()
         {
             return Height;
         }
 
-        public override double GetArea()
+        public double GetArea()
         {
             return Height * Height;
         }
 
-        public override double GetPerimeter()
+        public double GetPerimeter()
         {
             return Height * 4;
         }

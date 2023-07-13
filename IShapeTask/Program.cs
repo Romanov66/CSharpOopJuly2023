@@ -21,7 +21,7 @@ namespace Academits.Romanov.IShapeTask
             IShape shape1 = GetShapeMaxArea(shapes);
             IShape shape2 = GetSecondShapeAlongPerimeter(shapes);
 
-            Console.WriteLine($"Максимальная площадь фигуры массива: {shape1.GetArea()}, тип фигуры: {shape1.GetShapeType()}, ширина фигуры: {shape1.GetWidth()}, высота фигуры: {shape1.GetHeight()}.");
+            Console.WriteLine($"Величина максимальной площади фигуры массива: {shape1.GetArea()}, тип фигуры: {shape1.GetShapeType()}, ширина фигуры: {shape1.GetWidth()}, высота фигуры: {shape1.GetHeight()}.");
             Console.WriteLine($"Вторая величина периметра фигуры массива: {shape2.GetArea()}, тип фигуры: {shape2.GetShapeType()}, ширина фигуры: {shape2.GetWidth()}, высота фигуры: {shape2.GetHeight()}.");
         }
 

@@ -1,30 +1,15 @@
 ﻿namespace Academits.Romanov.IShapeTask
 {
-    public class IShape
+    public interface IShape
     {
-        public virtual string GetShapeType()
-        {
-            return "";
-        }
+        string GetShapeType();
 
-        public virtual double GetWidth()
-        {
-            return 0;
-        }
+        double GetWidth();
 
-        public virtual double GetHeight()
-        {
-            return 0;
-        }
+        double GetHeight();
 
-        public virtual double GetArea()
-        {
-            return 0;
-        }
+        double GetArea();
 
-        public virtual double GetPerimeter()
-        {
-            return 0;
-        }
+        double GetPerimeter();
     }
 }

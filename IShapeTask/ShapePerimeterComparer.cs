@@ -4,22 +4,22 @@ namespace IShapeTask
 {
     public class ShapePerimeterComparer : IComparer<IShape>
     {
-        public int Compare(IShape x, IShape y)
+        public int Compare(IShape currentShape, IShape nextShape)
         {
-            if (x is null || y is null)
+            if (currentShape is null || nextShape is null)
             {
                 throw new Exception("Некорректное значение параметра");
             }
 
-            double xArea = x.GetPerimeter();
-            double yArea = y.GetPerimeter();
+            double currentShapePerimeter = currentShape.GetPerimeter();
+            double nextShapePerimeter = nextShape.GetPerimeter();
 
-            if (xArea > yArea)
+            if (currentShapePerimeter > nextShapePerimeter)
             {
                 return 1;
             }
 
-            if (xArea < yArea)
+            if (currentShapePerimeter < nextShapePerimeter)
             {
                 return -1;
             }

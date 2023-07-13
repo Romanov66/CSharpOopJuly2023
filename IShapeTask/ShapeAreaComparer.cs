@@ -2,22 +2,22 @@
 {
     public class ShapeAreaComparer : IComparer<IShape>
     {
-        public int Compare(IShape x, IShape y)
+        public int Compare(IShape currentShape, IShape nextShape)
         {
-            if (x is null || y is null)
+            if (currentShape is null || nextShape is null)
             {
                 throw new Exception("Некорректное значение параметра");
             }
 
-            double xArea = x.GetArea();
-            double yArea = y.GetArea();
+            double currentShapeArea = currentShape.GetArea();
+            double nextShapeArea = nextShape.GetArea();
 
-            if (xArea > yArea)
+            if (currentShapeArea > nextShapeArea)
             {
                 return 1;
             }
 
-            if (xArea < yArea)
+            if (currentShapeArea < nextShapeArea)
             {
                 return -1;
             }
