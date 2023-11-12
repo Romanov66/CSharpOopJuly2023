@@ -266,24 +266,24 @@ namespace ArrayListTask
 
         public override bool Equals(object? obj)
         {
-            if(ReferenceEquals(obj, this))
+            if (ReferenceEquals(obj, this))
             {
                 return true;
             }
 
-            if(ReferenceEquals(obj, null) || GetType() != obj.GetType())
+            if (ReferenceEquals(obj, null) || GetType() != obj.GetType())
             {
                 return false;
             }
 
-            CustomList<T> list = (CustomList<T>) obj;
-            
-            if(list.Capacity != Capacity)
+            CustomList<T> list = (CustomList<T>)obj;
+
+            if (list.Capacity != Capacity)
             {
                 return false;
             }
 
-            if(list.Count !=  Count)
+            if (list.Count != Count)
             {
                 return false;
             }
