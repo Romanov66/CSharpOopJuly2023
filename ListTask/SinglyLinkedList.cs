@@ -2,226 +2,303 @@
 
 namespace ListTask
 {
-    internal class SinglyLinkedList<T>
+    public class SinglyLinkedList<T>
     {
-        private ListItem<T> head;
-        private int count;
+        private ListItem<T>? head;
 
-        public int GetLength()
+        public int Count { get; private set; }
+
+        public T? this[int index]
         {
-            return count;
+            get
+            {
+                ListItem<T>? item = GetItem(index);
+
+                if (item == null)
+                {
+                    return default;
+                }
+
+                return item.Data;
+            }
+            set
+            {
+                ListItem<T>? item = GetItem(index);
+
+                if (item != null)
+                {
+                    item.Data = value;
+                }
+
+            }
         }
 
-        public T GetFirstElementValue()
+        private ListItem<T>? GetItem(int index)
         {
+            if (index < 0 || index > Count)
+            {
+                throw new ArgumentOutOfRangeException(nameof(index), $"Некорректное значение индекса. Индекс должен быть больше 0 и меньше количества элементов списка." +
+                    $" Текущее значение индекса = {index}");
+            }
+
+            if (head == null)
+            {
+                return default;
+            }
+
+            ListItem<T>? item = head;
+
+            for (int i = 0; i < index; i++)
+            {
+                if (item.Next == null)
+                {
+                    return default;
+                }
+
+                item = item.Next;
+            }
+
+            return item;
+        }
+
+        public int GetIndex(T data)
+        {
+            if (Count == 0)
+            {
+                return -1;
+            }
+
+            int index = -1;
+            int i = 0;
+
+            for (ListItem<T>? currentItem = head; i < Count; currentItem = currentItem?.Next)
+            {
+                if (data != null && currentItem != null)
+                {
+                    if (data.Equals(currentItem.Data))
+                    {
+                        index = i;
+
+                        break;
+                    }
+                }
+
+                i++;
+            }
+
+            return index;
+        }
+
+        public T? GetFirst()
+        {
+            if (head == null)
+            {
+                return default;
+            }
+
             return head.Data;
         }
 
-        public T GetElementValue(int index)
+        public T? Set(int index, T data)
         {
-            if (index >= count)
-            {
-                throw new IndexOutOfRangeException("Индекс не может быть больше, чем количество элементов в списке.");
-            }
+            T? oldData = this[index];
+            this[index] = data;
 
-            ListItem<T> currentItem = head;
-            T elementValue = default;
-
-            for (int i = 0; i <= index; i++)
-            {
-                if (i == index)
-                {
-                    elementValue = currentItem.Data;
-                }
-
-                currentItem = currentItem.Next;
-            }
-
-            return elementValue;
+            return oldData;
         }
 
-        public T SetValue(int index, T value)
+        public void AddFirst(T data)
         {
-            if (index >= count)
+            ListItem<T> item = new(data)
             {
-                throw new IndexOutOfRangeException("Индекс не может быть больше, чем количество элементов в списке.");
-            }
+                Next = head
+            };
 
-            ListItem<T> currentItem = head;
-            T previousElementValue = default;
-
-            for (int i = 0; i <= index; i++)
-            {
-                if (i == index)
-                {
-                    previousElementValue = currentItem.Data;
-                    currentItem.Data = value;
-                }
-
-                currentItem = currentItem.Next;
-            }
-
-            return previousElementValue;
-        }
-
-        public T RemoveValue(int inputIndex)
-        {
-            if (inputIndex >= count)
-            {
-                throw new IndexOutOfRangeException("Индекс не может быть больше, чем количество элементов в списке.");
-            }
-
-            T elementValue = default;
-            int indexCurrentElement = 0;
-
-            for (ListItem<T> currentItem = head, previousItem = null; indexCurrentElement <= inputIndex; previousItem = currentItem, currentItem = currentItem.Next)
-            {
-                if (indexCurrentElement == inputIndex)
-                {
-                    elementValue = currentItem.Data;
-                    previousItem.Next = currentItem.Next;
-
-                    count--;
-                }
-
-                indexCurrentElement++;
-            }
-
-            return elementValue;
-        }
-
-        public void AddStart(ListItem<T> item)
-        {
-            item.Next = head;
             head = item;
 
-            count++;
+            Count++;
         }
 
-        public void Add(ListItem<T> item)
+        public void Add(int index, T data)
         {
-            if (count == 0)
+            if (index == 0)
             {
-                head = item;
-
-                count++;
+                AddFirst(data);
 
                 return;
             }
 
-            for (ListItem<T> currentItem = head; currentItem != null; currentItem = currentItem.Next)
+            ListItem<T>? previousItem = GetItem(index - 1);
+
+            if (previousItem == null)
             {
-                if (currentItem.Next == null)
-                {
-                    currentItem.Next = item;
-
-                    count++;
-
-                    return;
-                }
+                return;
             }
+
+            ListItem<T>? item = new(data);
+            ListItem<T>? currentItem = GetItem(index);
+
+            item.Next = currentItem;
+            previousItem.Next = item;
+
+            Count++;
         }
 
-        public void Add(ListItem<T> item, int inputIndex)
+        public T? RemoveFirst()
         {
-            if (inputIndex >= count)
+            if (head == null)
             {
-                throw new IndexOutOfRangeException("Индекс не может быть больше, чем количество элементов в списке.");
+                return default;
             }
 
-            int indexCurrentElement = 0;
+            T? deletedData = head.Data;
+            head = head.Next;
+            Count--;
 
-            for (ListItem<T> currentItem = head, previousItem = null; indexCurrentElement <= inputIndex; previousItem = currentItem, currentItem = currentItem.Next)
-            {
-                if (indexCurrentElement == inputIndex)
-                {
-                    item.Next = currentItem;
-                    previousItem.Next = item;
-
-                    count++;
-                }
-
-                indexCurrentElement++;
-            }
+            return deletedData;
         }
 
-        public bool RemoveElement(T elementValue)
+        public T? RemoveByIndex(int index)
         {
-            if (ReferenceEquals(elementValue, null))
+            T? deletedData = default;
+
+            if (index == 0)
+            {
+                if (head == null)
+                {
+                    return default;
+                }
+
+                deletedData = head.Data;
+                head = head.Next;
+            }
+            else
+            {
+                ListItem<T>? previousItem = GetItem(index - 1);
+                ListItem<T>? currentItem = GetItem(index);
+
+                if (previousItem == null || currentItem == null)
+                {
+                    return default;
+                }
+
+                deletedData = currentItem.Data;
+                previousItem.Next = currentItem.Next;
+            }
+
+            Count--;
+
+            return deletedData;
+        }
+
+        public bool RemoveByData(T data)
+        {
+            int index = GetIndex(data);
+
+            if (index < 0)
             {
                 return false;
             }
 
             bool isDeleted = false;
 
-            for (ListItem<T> currentItem = head, previousItem = null; currentItem != null; previousItem = currentItem, currentItem = currentItem.Next)
+            if (index == 0)
             {
-                if (elementValue.Equals(currentItem.Data))
+                if (head == null)
                 {
-                    previousItem.Next = currentItem.Next;
-                    isDeleted = true;
-
-                    count--;
-
-                    break;
+                    return isDeleted;
                 }
+
+                isDeleted = true;
+                head = head.Next;
             }
+            else
+            {
+                ListItem<T>? previousItem = GetItem(index - 1);
+                ListItem<T>? currentItem = GetItem(index);
+
+                if (previousItem == null || currentItem == null)
+                {
+                    return isDeleted;
+                }
+
+                previousItem.Next = currentItem.Next;
+            }
+
+            Count--;
 
             return isDeleted;
         }
 
-        public T RemoveStart()
+        public void Revert()
         {
-            T firstElementValue = head.Data;
-            head = head.Next;
-
-            count--;
-
-            return firstElementValue;
-        }
-
-        public void RevertList()
-        {
-            for (ListItem<T> currentItem = head.Next, previousItem = head; currentItem != null; previousItem = currentItem, currentItem = currentItem.Next)
+            if (Count == 0 || Count == 1)
             {
-                previousItem.Next = currentItem.Next;
-                currentItem.Next = head;
-                head = currentItem;
-
-                currentItem = previousItem;
+                return;
             }
-        }
 
-        public SinglyLinkedList<T> CopyList()
-        {
-            SinglyLinkedList<T> newList = new SinglyLinkedList<T>();
-
-            for (ListItem<T> currentItem = head, currentItemNewList = newList.head; currentItem != null; currentItem = currentItem.Next, currentItemNewList = currentItemNewList.Next)
+            for (ListItem<T>? currentItem = head?.Next, previousItem = head; currentItem != null; previousItem = currentItem, currentItem = currentItem.Next)
             {
-                if (currentItemNewList is null)
+                if (previousItem != null)
                 {
-                    newList.head = head;
-                    currentItemNewList = head;
+                    previousItem.Next = currentItem.Next;
+                    currentItem.Next = head;
+                    head = currentItem;
+
+                    currentItem = previousItem;
                 }
             }
+        }
 
-            newList.count = count;
+        public SinglyLinkedList<T> Copy()
+        {
+            SinglyLinkedList<T> newList = new SinglyLinkedList<T>();
+            int i = 0;
+
+            for (ListItem<T>? currentItem = head, newListCurrentItem = null; i < Count; currentItem = currentItem?.Next, newListCurrentItem = newListCurrentItem?.Next)
+            {
+                if (currentItem != null)
+                {
+                    newListCurrentItem = new(currentItem.Data, currentItem.Next);
+
+                    if (newListCurrentItem.Data != null)
+                    {
+                        newList.Add(i, newListCurrentItem.Data);
+                    }
+                }
+
+                i++;
+            }
 
             return newList;
         }
 
-        public virtual string ToString()
+        public override string ToString()
         {
-            StringBuilder itemsData = new StringBuilder();
+            StringBuilder stringBuilder = new StringBuilder();
+            int i = 0;
 
-            for (ListItem<T> currentItem = head; currentItem != null; currentItem = currentItem.Next)
+            for (ListItem<T>? currentItem = head; i < Count; currentItem = currentItem?.Next)
             {
-                itemsData.Append($"{currentItem.Data} ");
+                if (currentItem == null)
+                {
+                    break;
+                }
+
+                if (i == Count - 1)
+                {
+                    stringBuilder.Append(currentItem.Data);
+                }
+                else
+                {
+
+                    stringBuilder.Append(currentItem.Data + ", ");
+                }
+
+                i++;
             }
 
-            string itemsDataRow = itemsData.ToString();
-
-            return itemsDataRow;
+            return "[ " + stringBuilder.ToString() + " ]";
         }
     }
 }
