@@ -46,7 +46,7 @@ namespace ListTask
                 return default;
             }
 
-            ListItem<T>? item = head;
+            ListItem<T> item = head;
 
             for (int i = 0; i < index; i++)
             {
@@ -135,7 +135,7 @@ namespace ListTask
                 return;
             }
 
-            ListItem<T>? item = new(data);
+            ListItem<T> item = new(data);
             ListItem<T>? currentItem = GetItem(index);
 
             item.Next = currentItem;
@@ -160,7 +160,7 @@ namespace ListTask
 
         public T? RemoveByIndex(int index)
         {
-            T? deletedData = default;
+            T? deletedData;
 
             if (index == 0)
             {
