@@ -22,63 +22,65 @@
             return point >= From && point <= To;
         }
 
-        public Range GetIntersectionInterval(double from, double to)
+        public Range GetIntersection(Range range)
         {
-            if (From >= to || To <= from)
+            if (From >= range.To || To <= range.From)
             {
                 return null;
             }
 
-            double maxFrom = From > from ? From : from;
-            double minTo = To < to ? To : to;
+            double maxFrom = From > range.From ? From : range.From;
+            double minTo = To < range.To ? To : range.To;
 
             return new Range(maxFrom, minTo);
         }
 
-        public Range GetUnionInterval(double from, double to)
+        public Range[] GetUnion(Range range)
         {
-            double minFrom = From < from ? From : from;
-            double maxTo = To > to ? To : to;
-
-            return new Range(minFrom, maxTo);
-        }
-
-        public Range[] GetUnionIntervalsArray(double from, double to)
-        {
-            Range range1 = new Range(From, To);
-            Range range2 = new Range(from, to);
-
-            return new Range[] { range1, range2 };
-        }
-
-        public Range GetDifferenceInterval(double from, double to)
-        {
-            if (From == from)
+            if (From <= range.From && To >= range.To)
             {
-                double newFrom = To - 1;
-
-                return new Range(newFrom, To);
+                return new Range[] { new(From, To) };
             }
 
-            if (To == to)
+            if (range.From <= From && range.To >= To)
             {
-                double newTo = from - 1;
-
-                return new Range(From, newTo);
+                return new Range[] { new(range.From, range.To) };
             }
 
-            return new Range(From, To);
+            if (From > range.To || To < range.From)
+            {
+                return new Range[] { this, range };
+            }
+
+            double minFrom = From > range.From ? From : range.From;
+            double maxTo = To < range.To ? To : range.To;
+
+            return new Range[] { new(minFrom, maxTo) };
         }
 
-        public Range[] GetDifferenceIntervalsArray(double from, double to)
+        public Range[] GetDifference(Range range)
         {
-            double newFrom = To - 1;
-            double newTo = from - 1;
+            if (From < range.From && To > range.To)
+            {
+                return new Range[] { new(From, range.From), new(range.To, To) };
+            }
 
-            Range range1 = new Range(From, newTo);
-            Range range2 = new Range(newFrom, To);
+            if (From == range.From)
+            {
+                return To > range.To ? new Range[] { new(range.To, To) } : new Range[] { };
+            }
 
-            return new Range[] { range1, range2 };
+            if (To == range.To)
+            {
+                return From < range.From ? new Range[] { new(From, range.From) } : new Range[] { };
+            }
+
+            return new Range[] { };
+        }
+
+        public override string ToString()
+        {
+            return $"({From}; {To})";
         }
     }
 }
