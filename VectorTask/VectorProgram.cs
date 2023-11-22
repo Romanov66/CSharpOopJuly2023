@@ -4,85 +4,50 @@
     {
         static void Main(string[] args)
         {
-            //Vector test = new Vector(0);
-
             Vector vector1 = new Vector(3);
+            Vector vector2 = new Vector(new double[] { 3, 13, 7, 89, 34 });
+            Vector vector3 = new Vector(5, new double[] { 7, -1, 28 });
 
-            Console.WriteLine("Первый вектор = " + vector1);
-
+            Console.WriteLine("Координаты первого вектора = " + vector1);
+            Console.WriteLine("Координаты второго вектора = " + vector2);
+            Console.WriteLine("Координаты третьего вектора = " + vector3);
             Console.WriteLine();
 
-            Vector vector2 = new Vector(new double[] { 3, 13 });
+            vector1.Add(vector2);
+            vector2.Subtract(vector3);
+            vector3.MyltiplyScalar(3);
 
-            Console.WriteLine("Второй вектор = " + vector2);
-
+            Console.WriteLine("Координаты первого вектора после прибавления второго = " + vector1);
+            Console.WriteLine("Координаты второго вектора после вычитании третьего = " + vector2);
+            Console.WriteLine("Координаты третьего вектора после умножения на 3 = " + vector3);
             Console.WriteLine();
 
-            Vector vector3 = new Vector(vector2);
-
-            Console.WriteLine("Третий вектор = " + vector3);
-
-            Console.WriteLine();
-
-            Vector vector4 = new Vector(5, new double[] { 7, -1, 28 });
-
-            Console.WriteLine("Четвертый вектор = " + vector4);
-
-            Console.WriteLine();
-
-            Console.WriteLine("Размерность четвертого вектора = " + vector4.GetSize());
-
-            Console.WriteLine();
-
-            vector4.Coordinates = vector4.AddVector(vector2);
-
-            Console.WriteLine("Сумма четвертого и второго вектора равна = " + vector4);
-
-            vector2.Coordinates = vector2.SubtractVector(vector4);
-
-            Console.WriteLine("Разность второго и четвертого вектора равна = " + vector2);
-
-            Console.WriteLine();
-
-            vector4.Coordinates = vector4.ToScale(2);
-
-            Console.WriteLine("Результат увеличения четвертого вектора в два раза: " + vector4);
-
-            Console.WriteLine();
-
-            vector2.Coordinates = vector2.GetReverseVector();
+            vector2.Reverse();
 
             Console.WriteLine("Реузльтат реверсирования второго вектора: " + vector2);
-
+            Console.WriteLine();
+            Console.WriteLine("Длина первого вектора: " + Math.Round(vector1.GetLength(), 2, MidpointRounding.AwayFromZero));
+            Console.WriteLine("Длина второго вектора: " + Math.Round(vector2.GetLength(), 2, MidpointRounding.AwayFromZero));
+            Console.WriteLine("Длина третьего вектора: " + Math.Round(vector3.GetLength(), 2, MidpointRounding.AwayFromZero));
             Console.WriteLine();
 
-            Console.WriteLine("Длина второго вектора: " + vector2.GetVectorLength());
+            vector1 = new Vector(vector3);
 
+            Console.WriteLine("Вектор один и вектор три равны: " + vector1.Equals(vector3));
+            Console.WriteLine("Вектор один и вектор два равны: " + vector1.Equals(vector2));
+            Console.WriteLine();
+            Console.WriteLine("Хэш код вектор один: " + vector1.GetHashCode());
+            Console.WriteLine("Хэш код вектор два: " + vector2.GetHashCode());
+            Console.WriteLine("Хэш код вектор три: " + vector3.GetHashCode());
             Console.WriteLine();
 
-            Vector vector5 = new Vector(vector2);
+            vector1 = Vector.GetSum(vector1, vector3);
+            vector2 = Vector.GetDifference(vector3, vector1);
+            vector3 = Vector.GetScalarProduct(vector1, vector2);
 
-            Console.WriteLine("Вектор два и вектор пять равны: " + vector2.Equals(vector5));
-            Console.WriteLine("Вектор два и вектор четыре равны: " + vector2.Equals(vector4));
-
-            Console.WriteLine();
-
-            Console.WriteLine("Хэш код вектор два: " + vector2.GetHashCode() + "; хэш код вектора пять: " + vector5.GetHashCode());
-            Console.WriteLine("Хэш код вектор два: " + vector2.GetHashCode() + "; хэш код вектора четыре: " + vector4.GetHashCode());
-
-            Console.WriteLine();
-
-            vector2 = Vector.GetVectorsAddition(vector2, vector5);
-
-            Console.WriteLine("Результат сложения второго и пятого вектора: " + vector2);
-
-            vector4 = Vector.GetVectorsSubtraction(vector4, vector5);
-
-            Console.WriteLine("Результат вычетания четвертого и пятого вектора: " + vector4);
-
-            Console.WriteLine();
-
-            Console.WriteLine("Результат скалярного произведения второго и четвертого вектора: " + Vector.GetVectorsScalarProduct(vector2, vector4));
+            Console.WriteLine("Координаты первого вектора = " + vector1);
+            Console.WriteLine("Координаты второго вектора = " + vector2);
+            Console.WriteLine("Координаты третьего вектора = " + vector3);
         }
     }
 }
