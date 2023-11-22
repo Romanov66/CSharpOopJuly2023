@@ -2,57 +2,43 @@
 {
     public class Person
     {
-        public string Name { get; }
-        public int Age { get; }
+        private string name;
+        private int age;
 
-        public Person(string name, int age)
+        public string Name
         {
-            if (name is null)
+            get => name;
+            set
             {
-                throw new ArgumentNullException(nameof(name), "Имя не может быть null");
-            }
-
-            if (age <= 0)
-            {
-                throw new ArgumentException("Возраст не может быть меньше нуля", nameof(age));
-            }
-
-            Name = name;
-            Age = age;
-        }
-
-        /*public string Name
-        {
-            get 
-            {
-                return name; 
-            }
-            set 
-            {
-                if(value is null)
+                if (value is null)
                 {
                     throw new ArgumentNullException(nameof(value), "Имя не может быть null");
                 }
 
-                name = value; 
+                name = value;
             }
         }
 
         public int Age
         {
-            get 
-            {
-                return age;
-            }
-            set 
+            get => age;
+            set
             {
                 if (value <= 0)
                 {
                     throw new ArgumentException("Возраст не может быть меньше нуля", nameof(value));
                 }
 
-                age = value; 
+                age = value;
             }
-        }*/
+        }
+
+        public Person(string name, int age)
+        {
+            Name = name;
+            Age = age;
+        }
+
+
     }
 }

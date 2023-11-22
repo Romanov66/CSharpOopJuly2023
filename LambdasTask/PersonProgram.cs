@@ -28,13 +28,13 @@
 
             Console.WriteLine();
             Console.WriteLine("Имена несовершеннолетних лиц:");
-            
+
             foreach (Person person in minors)
             {
                 Console.WriteLine(person.Name);
-            }            
+            }
 
-            int minorsMiddleAge = (int) Math.Round(minors
+            int minorsMiddleAge = (int)Math.Round(minors
                 .Select(person => person.Age)
                 .Average(), MidpointRounding.AwayFromZero);
 
@@ -53,7 +53,7 @@
                     return (int)Math.Round(middleAge, MidpointRounding.AwayFromZero);
                 });
 
-            foreach(KeyValuePair<string, int> person in personsByName)
+            foreach (KeyValuePair<string, int> person in personsByName)
             {
                 Console.WriteLine("Имя: {0}, средний возраст по данному имени: {1}", person.Key, person.Value);
             }
@@ -66,7 +66,7 @@
             Console.WriteLine();
             Console.WriteLine("Имя людей, чей возраст перечислен в порядке убывания и находится в диапазоне от 20 до 45 лет:");
 
-            foreach(Person person in personsByMatureAge)
+            foreach (Person person in personsByMatureAge)
             {
                 Console.WriteLine("Имя: {0}, возраст: {1}", person.Name, person.Age);
             }
