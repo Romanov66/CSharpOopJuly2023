@@ -38,7 +38,5 @@
             Name = name;
             Age = age;
         }
-
-
     }
 }
