@@ -5,204 +5,202 @@ namespace HashTableTask
 {
     internal class HashTable<T> : ICollection<T>
     {
-        public ICollection<T>[] listsArray;
-        private int count;
+        private List<T>[] lists;
         private int modCount;
+
+        public int Count { get; private set; }
+
+        public bool IsReadOnly => false;
+
+        public HashTable()
+        {
+            lists = new List<T>[10];
+        }
 
         public HashTable(int size)
         {
-            listsArray = new ICollection<T>[size];
-        }
-
-        public HashTable(ICollection<T>[] listsArray)
-        {
-            this.listsArray = listsArray;
-        }
-
-        public int Count
-        {
-            get
+            if (size <= 0)
             {
-                return count;
+                throw new ArgumentOutOfRangeException(nameof(size), $"Размер не можеть быть меньше, либо равен 0. Текущее значение = {size}.");
+            }
+
+            lists = new List<T>[size];
+        }
+
+        public HashTable(ICollection<T> list)
+        {
+            if (list.Count == 0)
+            {
+                throw new ArgumentException("Передан пустой лист.", nameof(list));
+            }
+
+            if (list.Count <= 10)
+            {
+                lists = new List<T>[10];
+            }
+            else
+            {
+                lists = new List<T>[list.Count];
+            }
+
+            foreach (var e in list)
+            {
+                T element = e;
+                Add(element);
             }
         }
 
-        public int Capacity
+        public override string ToString()
         {
-            get
-            {
-                return listsArray.Length;
-            }
-        }
+            StringBuilder stringBuilder = new();
 
-        public bool IsReadOnly
-        {
-            get
+            for (int i = 0; i < lists.Length; i++)
             {
-                return false;
-            }
-        }
-
-        public virtual string ToString()
-        {
-            StringBuilder listsInfo = new StringBuilder();
-
-            foreach (ICollection<T> e in listsArray)
-            {
-                if (e is null)
+                if (lists[i] != null)
                 {
-                    continue;
-                }
-                else
-                {
-                    listsInfo.Append(string.Join(", ", e)).Append("    ");
+                    if (i == lists.Length - 1)
+                    {
+                        stringBuilder.Append($"[{string.Join(", ", lists[i])}]");
+                    }
+                    else
+                    {
+                        stringBuilder.Append($"[{string.Join(", ", lists[i])}]").Append(", ");
+                    }
                 }
             }
 
-            return listsInfo.ToString();
+            return $"[{stringBuilder}]";
         }
 
         public void Add(T element)
         {
-            if (element == null)
+            if (element != null)
             {
-                throw new ArgumentNullException("Переданнный аргумен не может быть null", nameof(element));
+                int index = Math.Abs(element.GetHashCode() % lists.Length);
+
+                if (lists[index] is null)
+                {
+                    lists[index] = new List<T>();
+
+                    Count++;
+                }
+
+                lists[index].Add(element);
+
+                modCount++;
             }
-
-            int index = Math.Abs(element.GetHashCode() % listsArray.Length);
-
-            if (listsArray[index] is null)
-            {
-                listsArray[index] = new List<T>();
-            }
-
-            listsArray[index].Add(element);
-
-            count++;
-            modCount++;
-        }
-
-        public void Add(ICollection<T> item)
-        {
-            if (item == null)
-            {
-                throw new ArgumentNullException("Переданнный аргумен не может быть null", nameof(item));
-            }
-
-            listsArray[count] = item;
-
-            count++;
-            modCount++;
         }
 
         public void Clear()
         {
-            Array.Clear(listsArray, 0, listsArray.Length);
+            if (lists.Length == 0)
+            {
+                return;
+            }
 
-            count = 0;
+            Array.Clear(lists);
+
+            Count = 0;
             modCount++;
         }
 
-        public bool Contains(T item)
+        public bool Contains(T element)
         {
-            if (item == null)
+            if (element == null)
             {
                 return false;
             }
 
-            bool isContains = false;
+            int index = Math.Abs(element.GetHashCode() % lists.Length);
 
-            int index = Math.Abs(item.GetHashCode() % listsArray.Length);
-
-            if (listsArray[index] is null)
+            if (lists[index] is null)
             {
                 return false;
             }
 
-            foreach (T e in listsArray[index])
+            return lists[index].Contains(element);
+        }
+
+        public void CopyTo(T[] array, int arrayIndex)
+        {
+            if (array is null)
             {
-                if (e is not null)
+                throw new ArgumentNullException(nameof(array), "Массив не может быть null");
+            }
+
+            if (arrayIndex < 0)
+            {
+                throw new ArgumentOutOfRangeException(nameof(arrayIndex), $"Индекс не должен быть меньше нуля. Индекс = {arrayIndex}.");
+            }
+
+            List<T> allData = new();
+
+            for (int i = 0; i < lists.Length; i++)
+            {
+                for (int j = 0; j < lists[i].Count; j++)
                 {
-                    if (e.Equals(item))
-                    {
-                        isContains = true;
-
-                        break;
-                    }
+                    T element = lists[i][j];
+                    allData.Add(element);
                 }
             }
 
-            return isContains;
+            if (allData.Count > array.Length - arrayIndex)
+            {
+                throw new ArgumentException($"Копирование невозможно. Длинна массива с заданного индекса меньше, чем количество компонентов. Длинна массива с заданного индекса = {array.Length - arrayIndex}; количество компонентов = {allData.Count}.", nameof(array));
+            }
+
+            Array.Copy(allData.ToArray(), 0, array, arrayIndex, allData.Count);
         }
 
-        public void CopyTo(T[] array, int listsArrayIndex)
+        public bool Remove(T element)
         {
-            Array.Copy(listsArray[listsArrayIndex].ToArray(), 0, array, 0, listsArray[listsArrayIndex].Count);
-        }
-
-        public bool Remove(T item)
-        {
-            if (item == null)
+            if (element == null)
             {
                 return false;
             }
 
-            bool isDelete = false;
+            int index = Math.Abs(element.GetHashCode() % lists.Length);
 
-            int index = Math.Abs(item.GetHashCode() % listsArray.Length);
-
-            if (listsArray[index] is null)
+            if (lists[index] is null)
             {
                 return false;
             }
 
-            foreach (T e in listsArray[index])
+            if (lists[index].Remove(element))
             {
-                if (e is not null)
+                if (lists[index].Count == 0)
                 {
-                    if (e.Equals(item))
-                    {
-                        listsArray[index].Remove(e);
-
-                        if (listsArray[index].Count == 0)
-                        {
-                            count--;
-                        }
-
-                        isDelete = true;
-                        modCount++;
-
-                        break;
-                    }
+                    Count--;
                 }
+
+                return true;
             }
 
-            return isDelete;
+            return false;
         }
 
-        public IEnumerator<ICollection<T>> GetEnumerator()
+        public IEnumerator<T> GetEnumerator()
         {
-            int currentModCount = modCount;
+            int startModCount = modCount;
 
-            for (int i = 0; i < Count; ++i)
+
+            for (int i = 0; i < lists.Length; ++i)
             {
-                if (currentModCount != modCount)
+                if (startModCount != modCount)
                 {
                     throw new InvalidOperationException("Недопускается изменять список.");
                 }
 
-                yield return listsArray[i];
+                foreach (T element in lists[i])
+                {
+                    yield return element;
+                }
             }
         }
 
         IEnumerator IEnumerable.GetEnumerator()
         {
             return GetEnumerator();
-        }
-
-        IEnumerator<T> IEnumerable<T>.GetEnumerator()
-        {
-            throw new NotImplementedException();
         }
     }
 }

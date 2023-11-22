@@ -4,48 +4,39 @@
     {
         static void Main(string[] args)
         {
-            HashTable<int> hashTable = new HashTable<int>(10);
-
-            List<int> numbers1 = new List<int>(3)
+            List<int> numbersList = new List<int>(3)
             {
-                1, 2, 3
+                1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11
             };
 
-            List<int> numbers2 = new List<int>(4)
+            HashTable<int> hashTable = new HashTable<int>(numbersList);
+
+            Console.WriteLine("Содержимое хэш-таблицы: " + hashTable);
+            Console.WriteLine("Количество компонентов до изменения: " + hashTable.Count);
+
+            hashTable.Remove(7);
+            hashTable.Add(81);
+            hashTable.Add(101);
+
+            Console.WriteLine("Содержимое хэш-таблицы после удаления компонента со значением 7 и добавление компонентов со значениями 81 и 101: " + hashTable);
+            Console.WriteLine("Количество компонентов после изменения: " + hashTable.Count);
+            Console.WriteLine();
+            Console.WriteLine("Хэш-таблица содержит компонент со значением 101: " + hashTable.Contains(101));
+            Console.WriteLine("Хэш-таблица содержит компонент со значением 81: " + hashTable.Contains(81));
+            Console.WriteLine("Хэш-таблица содержит компонент со значением 3: " + hashTable.Contains(3));
+            Console.WriteLine("Хэш-таблица содержит компонент со значением 99: " + hashTable.Contains(99));
+            Console.WriteLine();
+
+            int[] numbersArray = new int[15];
+            hashTable.CopyTo(numbersArray, 3);
+
+            Console.WriteLine("Массив чисел: " + string.Join(", ", numbersArray));
+            Console.WriteLine();
+            Console.WriteLine("Ниже представлен проход по хэш-таблицы с помощью конструкции foreach: ");
+
+            foreach (int number in hashTable)
             {
-                4, 5, 6, 7
-            };
-
-            List<int> numbers3 = new List<int>(3)
-            {
-                8, 9, 10
-            };
-
-            hashTable.Add(numbers1);
-            hashTable.Add(numbers2);
-            hashTable.Add(numbers3);
-            hashTable.Add(125);
-
-            Console.WriteLine("Содержимое хэш-таблицы: " + hashTable.ToString());
-            Console.WriteLine("Наличие значения 125 в хэш-таблице: " + hashTable.Contains(125));
-
-            int[] numbers = new int[10];
-
-            hashTable.CopyTo(numbers, 1);
-
-            Console.WriteLine("Массив чисел: " + string.Join(", ", numbers));
-            Console.WriteLine("Количество элементов хэш-таблицы: " + hashTable.Count);
-
-            hashTable.Remove(125);
-
-            Console.WriteLine("Содержимое хэш-таблицы: " + hashTable.ToString());
-            Console.WriteLine("Количество элементов хэш-таблицы: " + hashTable.Count);
-
-            foreach (List<int> list in hashTable)
-            {
-                Console.WriteLine(string.Join(", ", list));
-
-                hashTable.Add(1);
+                Console.WriteLine("Компонент хэш-таблице: " + number);
             }
         }
     }
