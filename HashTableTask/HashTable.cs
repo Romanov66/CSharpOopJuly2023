@@ -183,7 +183,6 @@ namespace HashTableTask
         {
             int startModCount = modCount;
 
-
             for (int i = 0; i < lists.Length; ++i)
             {
                 if (startModCount != modCount)
