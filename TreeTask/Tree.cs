@@ -1,326 +1,386 @@
 ﻿namespace TreeTask
 {
-    internal class Tree<T> where T : IComparable<T>
+    public class BinaryTree<T>
     {
-        public TreeNode<T> RootNode { get; set; }
-        int count;
+        private TreeNode<T> root;
+        private IComparer<T> comparator;
 
-        public Tree()
+        public int Count { get; private set; }
+
+        public BinaryTree()
         {
-            RootNode = null;
         }
 
-        public int Count
+        public BinaryTree(IComparer<T> comparator)
         {
-            get
-            {
-                return count;
-            }
+            this.comparator = comparator;
         }
 
-
-        public void Add(TreeNode<T> node)
+        private int Compare(T data1, T data2)
         {
-            if (node == null)
+            if (data1 is null)
             {
-                throw new ArgumentNullException("Переданный аргумент не может быть null", nameof(node));
+                throw new ArgumentException("Параметр не может быть null", nameof(data1));
             }
 
-            if (RootNode == null)
+            if (data2 is null)
             {
-                RootNode = node;
-                count++;
+                throw new ArgumentException("Параметр не может быть null", nameof(data2));
+            }
+
+            if (comparator is null)
+            {
+                IComparable<T> comparable = (IComparable<T>)data1;
+
+                return comparable.CompareTo(data2);
+            }
+
+            return comparator.Compare(data1, data2);
+        }
+
+        public void Add(T data)
+        {
+            if (root == null)
+            {
+                root = new TreeNode<T>(data);
+                Count++;
 
                 return;
             }
 
-            TreeNode<T> currentNode = RootNode;
+            TreeNode<T> currentNode = root;
+            TreeNode<T> node = new TreeNode<T>(data);
 
             while (currentNode is not null)
             {
-                int result = currentNode.Data.CompareTo(node.Data);
+                int comparisonResult = Compare(currentNode.Data, node.Data);
 
-                if (result > 0)
+                if (comparisonResult > 0)
                 {
-                    if (currentNode.Left is not null)
-                    {
-                        currentNode = currentNode.Left;
-                    }
-                    else
+                    if (currentNode.Left is null)
                     {
                         currentNode.Left = node;
-                        count++;
+                        Count++;
 
                         return;
                     }
-                }
 
-                if (result <= 0)
+                    currentNode = currentNode.Left;
+                }
+                else
                 {
-                    if (currentNode.Right is not null)
-                    {
-                        currentNode = currentNode.Right;
-                    }
-                    else
+                    if (currentNode.Right is null)
                     {
                         currentNode.Right = node;
-                        count++;
+                        Count++;
 
                         return;
                     }
+
+                    currentNode = currentNode.Right;
                 }
             }
         }
 
-        public TreeNode<T> FindNote(T serchElement)
+        public bool Contains(T data)
         {
-            if (serchElement == null)
-            {
-                throw new ArgumentNullException("Переданный аргумент не может быть null", nameof(serchElement));
-            }
-
-            TreeNode<T> currentNode = RootNode;
-            TreeNode<T> serchNode = null;
+            TreeNode<T> currentNode = root;
 
             while (currentNode is not null)
             {
-                if (currentNode.Data.Equals(serchElement))
-                {
-                    serchNode = currentNode;
+                int comparisonResult = Compare(currentNode.Data, data);
 
+                if (comparisonResult == 0)
+                {
+                    return true;
+                }
+
+                if (comparisonResult > 0)
+                {
+                    currentNode = currentNode.Left;
+                }
+                else
+                {
+                    currentNode = currentNode.Right;
+                }
+            }
+
+            return false;
+        }
+
+        public bool Remove(T data)
+        {
+            if (data == null)
+            {
+                return false;
+            }
+
+            if (root is null)
+            {
+                return false;
+            }
+
+            TreeNode<T> deletedNodeParent = default;
+            TreeNode<T> deletedNode = root;
+            int comparisonResult = -1;
+            int i = 0;
+
+            while (deletedNode is not null)
+            {
+                comparisonResult = Compare(deletedNode.Data, data);
+
+                if (comparisonResult == 0)
+                {
                     break;
                 }
 
-                int result = currentNode.Data.CompareTo(serchElement);
-
-                if (result > 0)
+                if (comparisonResult > 0)
                 {
-                    if (currentNode.Left is not null)
-                    {
-                        currentNode = currentNode.Left;
-                    }
-                    else
-                    {
-                        break;
-                    }
+                    deletedNodeParent = deletedNode;
+                    deletedNode = deletedNodeParent.Left;
+                }
+                else
+                {
+                    deletedNodeParent = deletedNode;
+                    deletedNode = deletedNodeParent.Right;
                 }
 
-                if (result <= 0)
-                {
-                    if (currentNode.Right is not null)
-                    {
-                        currentNode = currentNode.Right;
-                    }
-                    else
-                    {
-                        break;
-                    }
-                }
+                i++;
             }
 
-            return serchNode;
-        }
-
-        public void Remove(T element)
-        {
-            if (element == null)
+            if (comparisonResult != 0)
             {
-                throw new ArgumentNullException("Переданный аргумент не может быть null", nameof(element));
+                return false;
             }
 
-            TreeNode<T> nextNode = RootNode;
-            TreeNode<T> currnetNode = null;
-
-            while (nextNode is not null)
+            if (i == 0)
             {
-                if (nextNode.Data.Equals(element))
+                if (deletedNode.Left is null && deletedNode.Right is null)
                 {
-                    if (nextNode.Data.Equals(RootNode.Data))
-                    {
-                        RootNode = null;
-                        count = 0;
-                    }
-                    else if (nextNode.Left is null && nextNode.Right is null)
-                    {
-                        if (currnetNode.Data.CompareTo(nextNode.Data) > 0)
-                        {
-                            currnetNode.Left = null;
-                        }
-                        else
-                        {
-                            currnetNode.Right = null;
-                        }
-                    }
-                    else if (nextNode.Left is not null && nextNode.Right is null)
-                    {
-                        if (currnetNode.Data.CompareTo(nextNode.Data) > 0)
-                        {
-                            currnetNode.Left = nextNode.Left;
-                        }
-                        else
-                        {
-                            currnetNode.Right = nextNode.Left;
-                        }
-                    }
-                    else if (nextNode.Left is null && nextNode.Right is not null)
-                    {
-                        if (currnetNode.Data.CompareTo(nextNode.Data) > 0)
-                        {
-                            currnetNode.Left = nextNode.Right;
-                        }
-                        else
-                        {
-                            currnetNode.Right = nextNode.Right;
-                        }
-                    }
-                    else
-                    {
-                        TreeNode<T> deletedNodeParent = currnetNode;
-                        TreeNode<T> deletedNode = nextNode;
-                        TreeNode<T> minLeftNodeParent = deletedNode.Right;
-                        TreeNode<T> minLeftNode = minLeftNodeParent.Left;
-
-                        if (minLeftNodeParent is null)
-                        {
-                            if (deletedNode.Left is not null)
-                            {
-                                if (deletedNodeParent.Data.CompareTo(deletedNode.Data) > 0)
-                                {
-                                    deletedNodeParent.Left = deletedNode.Left;
-                                }
-                                else
-                                {
-                                    deletedNodeParent.Right = deletedNode.Left;
-                                }
-                            }
-                            else
-                            {
-                                if (deletedNodeParent.Data.CompareTo(deletedNode.Data) > 0)
-                                {
-                                    deletedNodeParent.Left = null;
-                                }
-                                else
-                                {
-                                    deletedNodeParent.Right = null;
-                                }
-                            }
-                        }
-
-                        while (minLeftNode is not null)
-                        {
-                            if (minLeftNode.Left is not null)
-                            {
-                                minLeftNodeParent = minLeftNode;
-                                minLeftNode = minLeftNode.Left;
-                            }
-                            else
-                            {
-                                break;
-                            }
-                        }
-
-                        if (minLeftNode.Right is not null)
-                        {
-                            minLeftNodeParent.Left = minLeftNode.Right;
-                        }
-
-                        minLeftNode.Left = deletedNode.Left;
-                        minLeftNode.Right = deletedNode.Right;
-
-                        if (deletedNodeParent.Data.CompareTo(deletedNode.Data) > 0)
-                        {
-                            deletedNodeParent.Left = minLeftNode;
-                        }
-                        else
-                        {
-                            deletedNodeParent.Right = minLeftNode;
-                        }
-                    }
-
-                    count--;
-
-                    return;
+                    root = null;
                 }
-
-                int result = nextNode.Data.CompareTo(element);
-
-                if (result > 0)
+                else if (deletedNode.Left is null || deletedNode.Right is null)
                 {
-                    if (nextNode.Left is not null)
+                    if (deletedNode.Left is null)
                     {
-                        currnetNode = nextNode;
-                        nextNode = nextNode.Left;
+                        root = deletedNode.Right;
                     }
                     else
                     {
-                        return;
+                        root = deletedNode.Left;
                     }
                 }
                 else
                 {
-                    if (nextNode.Right is not null)
+                    TreeNode<T> minLeftNodeParent = deletedNode.Right;
+                    TreeNode<T> minLeftNode = minLeftNodeParent.Left;
+
+                    if (minLeftNode is null)
                     {
-                        currnetNode = nextNode;
-                        nextNode = nextNode.Right;
+                        minLeftNodeParent.Left = root.Left;
+                        minLeftNodeParent.Right = root.Right;
+
+                        root = minLeftNodeParent;
+                        Count--;
+
+                        return true;
+                    }
+
+                    while (minLeftNode.Left is not null)
+                    {
+                        minLeftNodeParent = minLeftNode;
+                        minLeftNode = minLeftNodeParent.Left;
+                    }
+
+                    if (minLeftNode.Right is not null)
+                    {
+                        minLeftNodeParent.Left = minLeftNode.Right;
                     }
                     else
                     {
-                        return;
+                        minLeftNodeParent.Left = null;
+                    }
+
+                    minLeftNode.Left = root.Left;
+                    minLeftNode.Right = root.Right;
+
+                    root = minLeftNode;
+                }
+            }
+            else
+            {
+                if (deletedNode.Left is null && deletedNode.Right is null)
+                {
+                    if (deletedNode == deletedNodeParent.Left)
+                    {
+                        deletedNodeParent.Left = null;
+                    }
+                    else
+                    {
+                        deletedNodeParent.Right = null;
+                    }
+                }
+                else if (deletedNode.Left is null || deletedNode.Right is null)
+                {
+                    if (deletedNode.Left is null)
+                    {
+                        if (deletedNode == deletedNodeParent.Left)
+                        {
+                            deletedNodeParent.Left = deletedNode.Right;
+                        }
+                        else
+                        {
+                            deletedNodeParent.Right = deletedNode.Right;
+                        }
+                    }
+                    else
+                    {
+                        if (deletedNode == deletedNodeParent.Left)
+                        {
+                            deletedNodeParent.Left = deletedNode.Left;
+                        }
+                        else
+                        {
+                            deletedNodeParent.Right = deletedNode.Left;
+                        }
+                    }
+                }
+                else
+                {
+                    TreeNode<T> minLeftNodeParent = deletedNode.Right;
+                    TreeNode<T> minLeftNode = minLeftNodeParent.Left;
+
+                    if (minLeftNode is null)
+                    {
+                        minLeftNodeParent.Left = deletedNode.Left;
+
+                        if (deletedNode == deletedNodeParent.Left)
+                        {
+                            deletedNodeParent.Left = minLeftNodeParent;
+                        }
+                        else
+                        {
+                            deletedNodeParent.Right = minLeftNodeParent;
+                        }
+
+                        Count--;
+
+                        return true;
+                    }
+
+                    while (minLeftNode.Left is not null)
+                    {
+                        minLeftNodeParent = minLeftNode;
+                        minLeftNode = minLeftNodeParent.Left;
+                    }
+
+                    if (minLeftNode.Right is not null)
+                    {
+                        minLeftNodeParent.Left = minLeftNode.Right;
+                    }
+                    else
+                    {
+                        minLeftNodeParent.Left = null;
+                    }
+
+                    minLeftNode.Left = deletedNode.Left;
+                    minLeftNode.Right = deletedNode.Right;
+
+                    if (deletedNode == deletedNodeParent.Left)
+                    {
+                        deletedNodeParent.Left = minLeftNode;
+                    }
+                    else
+                    {
+                        deletedNodeParent.Right = minLeftNode;
                     }
                 }
             }
+
+            Count--;
+
+            return true;
         }
 
-        public void RunWide()
+        public void GoAroundInWidth(Action<T> action)
         {
-            Queue<TreeNode<T>> queue = new Queue<TreeNode<T>>(count);
-            queue.Enqueue(RootNode);
+            if (root is null)
+            {
+                return;
+            }
+
+            Queue<TreeNode<T>> queue = new Queue<TreeNode<T>>(Count);
+
+            queue.Enqueue(root);
 
             while (queue.Count > 0)
             {
                 TreeNode<T> currentNode = queue.Dequeue();
 
-                if (currentNode is not null)
-                {
-                    Console.WriteLine(currentNode.Data);
+                action(currentNode.Data);
 
+                if (currentNode.Left is not null)
+                {
                     queue.Enqueue(currentNode.Left);
+                }
+
+                if (currentNode.Right is not null)
+                {
                     queue.Enqueue(currentNode.Right);
                 }
             }
         }
 
-        public void RunHighRecursivly(TreeNode<T> node)
+        public void GoAroundInDepthCyclically(Action<T> action)
         {
-            Console.WriteLine(node.Data);
-
-            TreeNode<T>[] children = { node.Left, node.Right };
-
-            foreach (TreeNode<T> child in children)
+            if (root is null)
             {
-                if (child is not null)
-                {
-                    RunHighRecursivly(child);
-                }
+                return;
             }
-        }
 
-        public void RunHigh()
-        {
-            Stack<TreeNode<T>> stack = new Stack<TreeNode<T>>(count);
-            stack.Push(RootNode);
+            Stack<TreeNode<T>> stack = new Stack<TreeNode<T>>(Count);
+            stack.Push(root);
 
             while (stack.Count > 0)
             {
                 TreeNode<T> currentNode = stack.Pop();
 
-                if (currentNode is not null)
-                {
-                    Console.WriteLine(currentNode.Data);
+                action(currentNode.Data);
 
+                if (currentNode.Right is not null)
+                {
                     stack.Push(currentNode.Right);
+                }
+
+                if (currentNode.Left is not null)
+                {
                     stack.Push(currentNode.Left);
                 }
+            }
+        }
+
+        public void GoAroundInDepth(Action<T> action)
+        {
+            if (root is null)
+            {
+                return;
+            }
+
+            GoAroundInDepthRecursively(root, action);
+        }
+
+        private void GoAroundInDepthRecursively(TreeNode<T> node, Action<T> action)
+        {
+            action(node.Data);
+
+            if (node.Left is not null)
+            {
+                GoAroundInDepthRecursively(node.Left, action);
+            }
+
+            if (node.Right is not null)
+            {
+                GoAroundInDepthRecursively(node.Right, action);
             }
         }
     }
