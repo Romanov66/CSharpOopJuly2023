@@ -20,22 +20,6 @@
             Console.WriteLine("Вместимость списка: " + numbersList.Capacity);
             Console.WriteLine();
 
-            bool isDelete = numbersList.Remove(10);
-
-            Console.WriteLine("Результат удаления элемента со значением 10: " + isDelete);
-            Console.WriteLine("Список чисел: " + numbersList);
-            Console.WriteLine("Количество элементов списка: " + numbersList.Count);
-            Console.WriteLine("Вместимость списка: " + numbersList.Capacity);
-            Console.WriteLine();
-
-            isDelete = numbersList.Remove(56);
-
-            Console.WriteLine("Результат удаления элемента со значением 56: " + isDelete);
-            Console.WriteLine("Список чисел: " + numbersList);
-            Console.WriteLine("Количество элементов списка: " + numbersList.Count);
-            Console.WriteLine("Вместимость списка: " + numbersList.Capacity);
-            Console.WriteLine();
-
             numbersList.RemoveAt(4);
 
             Console.WriteLine("Список чисел после удаления элемента лежащего по индексу 4: " + numbersList);
@@ -55,7 +39,7 @@
             int[] numbers = new int[20];
             numbersList.CopyTo(numbers, 0);
 
-            Console.WriteLine("Результат копирования массива чисел новым списком: " + string.Join(", ", numbers));
+            Console.WriteLine("Результат копирования: " + string.Join(", ", numbers));
             Console.WriteLine();
 
             CustomList<int> newNubersList = new CustomList<int>(numbers);
@@ -92,7 +76,7 @@
 
             Console.WriteLine();
             Console.WriteLine("Индекс элемента 5 = " + numbersList.IndexOf(5));
-            Console.WriteLine("Индекс не существующего элемента 35 = " + numbersList.IndexOf(35));
+            Console.WriteLine("Индекс элемента 35 = " + numbersList.IndexOf(35));
 
             numbersList.Insert(9, 10);
 

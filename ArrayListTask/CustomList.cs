@@ -1,24 +1,26 @@
 ﻿using System.Collections;
+using System.Text;
 
 namespace ArrayListTask
 {
     public class CustomList<T> : IList<T>
     {
         private T[] items;
+        private const int defaultSize = 10;
         private int modCount;
 
         public int Count { get; private set; }
 
-        public bool IsReadOnly { get => false; }
+        public bool IsReadOnly => false;
 
         public int Capacity
         {
             get => items.Length;
             set
             {
-                if (value < Count)
+                if (value < 0 || value < Count)
                 {
-                    throw new ArgumentException($"Значение не может быть меньше количества элементов в списке. Value = {value}.", nameof(value));
+                    throw new ArgumentException($"Значение не должно быть меньше 0 и количества элементов в списке. Value = {value}; количество элементов = {Count}", nameof(value));
                 }
 
                 if (value == items.Length)
@@ -26,45 +28,35 @@ namespace ArrayListTask
                     return;
                 }
 
-                if (value > 0)
-                {
-                    if (Count > 0)
-                    {
-                        Array.Resize(ref items, value);
-                    }
-                }
-                else
-                {
-                    items = Array.Empty<T>();
-                }
+                Array.Resize(ref items, value);
             }
         }
 
         public CustomList()
         {
-            items = Array.Empty<T>();
+            items = new T[defaultSize];
         }
 
         public CustomList(int capacity)
         {
             if (capacity < 0)
             {
-                throw new ArgumentOutOfRangeException(nameof(capacity), $"Размер массива не может быть меньше нуля. Capacity = {capacity}.");
+                throw new ArgumentOutOfRangeException(nameof(capacity), $"Размер списка не может быть меньше нуля. Capacity = {capacity}.");
             }
 
-            if (capacity == 0)
-            {
-                items = Array.Empty<T>();
-            }
-            else
-            {
-                items = new T[capacity];
-            }
+            items = new T[capacity];
         }
 
-        public CustomList(T[] inputItems)
+        public CustomList(T[] items)
         {
-            items = inputItems;
+            if (items.Length == 0)
+            {
+                throw new ArgumentException($"Массив не должен быть пустым.", nameof(items));
+            }
+
+            this.items = new T[items.Length];
+            Array.Copy(items, 0, this.items, 0, items.Length);
+
             Count = items.Length;
         }
 
@@ -72,33 +64,53 @@ namespace ArrayListTask
         {
             get
             {
-                if (index >= Count)
-                {
-                    throw new ArgumentOutOfRangeException(nameof(index), $"Индекс не может быть больше, чем количество элементов в списке. Количество элементов = {Count}. Переданное значение индекса = {index}");
-                }
+                CheckIndex(index);
 
                 return items[index];
+
             }
 
             set
             {
-                if (index >= Count)
-                {
-                    throw new ArgumentOutOfRangeException(nameof(index), $"Индекс не может быть больше, чем количество элементов в списке. Количество элементов = {Count}. Переданное значение индекса = {index}");
-                }
+                CheckIndex(index);
 
                 items[index] = value;
             }
         }
 
+        private bool CheckIndex(int index)
+        {
+            if (index < 0 || index >= Capacity)
+            {
+                throw new ArgumentOutOfRangeException(nameof(index), $"Индекс не должен быть меньше нуля и больше, либо равен размеру списка. Размер списка = {Capacity}. Индекс = {index}");
+            }
+
+            return true;
+        }
+
         public override string ToString()
         {
-            return "[ " + string.Join(", ", items.Where(i => i != null)) + " ]";
+            StringBuilder stringBuilder = new StringBuilder();
+            stringBuilder.Append('[');
+
+            for (int i = 0; i < Count; i++)
+            {
+                if (i == Count - 1)
+                {
+                    stringBuilder.Append($"{items[i]}");
+                }
+                else
+                {
+                    stringBuilder.Append($"{items[i]}, ");
+                }
+            }
+
+            return stringBuilder.Append(']').ToString();
         }
 
         public void Add(T item)
         {
-            if (Count >= items.Length)
+            if (Count >= Capacity)
             {
                 IncreaseCapacity();
             }
@@ -113,10 +125,12 @@ namespace ArrayListTask
         {
             if (Capacity == 0)
             {
-                Array.Resize(ref items, 10);
+                items = new T[defaultSize];
             }
-
-            Array.Resize(ref items, items.Length * 2);
+            else
+            {
+                Capacity *= 2;
+            }
         }
 
         public void Clear()
@@ -132,21 +146,19 @@ namespace ArrayListTask
 
         public bool Contains(T item)
         {
-            var index = Array.IndexOf(items, item);
-
-            if (index >= 0)
+            if (Count == 0)
             {
-                return true;
+                return false;
             }
 
-            return false;
+            return Array.IndexOf(items, item, 0, Count) > -1;
         }
 
-        public void CopyTo(T[] inputItems, int startIndex)
+        public void CopyTo(T[] items, int startIndex)
         {
-            if (inputItems is null)
+            if (items is null)
             {
-                throw new ArgumentNullException(nameof(inputItems), "Массив не может быть null");
+                throw new ArgumentNullException(nameof(items), "Массив не должен быть null");
             }
 
             if (startIndex < 0)
@@ -154,34 +166,31 @@ namespace ArrayListTask
                 throw new ArgumentOutOfRangeException(nameof(startIndex), $"Индекс не должен быть меньше нуля. Индекс = {startIndex}");
             }
 
-            if (Count > inputItems.Length)
+            if (Count > items.Length - startIndex)
             {
-                throw new ArgumentException("Количество элементов исходного списка больше, чем конечный индекс массива", nameof(inputItems));
+                throw new ArgumentException($"Копирование невозможно. Длинна массива с заданного индекса меньше, чем количество элементов списка. Длинна массива с заданного индекса = {items.Length - startIndex}; количество элементов = {Count}.", nameof(items));
             }
 
-            Array.Copy(items, startIndex, inputItems, 0, Count - startIndex);
+            Array.Copy(this.items, 0, items, startIndex, Count);
         }
 
         public bool Remove(T item)
         {
-            int index = Array.IndexOf(items, item);
-
-            if (index >= 0)
+            try
             {
-                RemoveAt(index);
-
-                return true;
+                RemoveAt(Array.IndexOf(items, item, 0, Count));
+            }
+            catch (ArgumentOutOfRangeException)
+            {
+                return false;
             }
 
-            return false;
+            return true;
         }
 
         public void RemoveAt(int index)
         {
-            if (index >= Count)
-            {
-                throw new ArgumentOutOfRangeException(nameof(index), $"Переданный индекс превышает количество элементов в списке. Количество элементов = {Count}. Переданное значение индекса = {index}");
-            }
+            CheckIndex(index);
 
             if (index < Count - 1)
             {
@@ -196,28 +205,25 @@ namespace ArrayListTask
 
         public int IndexOf(T item)
         {
-            return Array.IndexOf(items, item);
+            return Array.IndexOf(items, item, 0, Count);
         }
 
         public void Insert(int index, T item)
         {
-            if (index < 0 || index > Capacity)
+            CheckIndex(index);
+
+            if (Count >= Capacity)
             {
-                throw new ArgumentOutOfRangeException(nameof(index), $"Некорректное значение индекса. Индекс = {index}");
+                IncreaseCapacity();
             }
 
-            if (Capacity == Count)
+            for (int i = Count - 1; i > index - 1; i--)
             {
-                Capacity = Capacity + 1;
+                items[i] = items[i + 1];
             }
 
-            if (index == Capacity - 1)
-            {
-                Add(item);
-
-                return;
-            }
-
+            items[index] = item;
+            /*
             T outerTemp = items[index];
 
             for (int i = index; i < Capacity; i++)
@@ -231,18 +237,18 @@ namespace ArrayListTask
                 T innerTemp = items[i];
                 items[i] = outerTemp;
                 outerTemp = innerTemp;
-            }
+            }*/
         }
 
         public IEnumerator<T> GetEnumerator()
         {
-            int startModCount = modCount;
+            int initialModCount = modCount;
 
             for (int i = 0; i < Count; ++i)
             {
-                if (startModCount != modCount)
+                if (initialModCount != modCount)
                 {
-                    throw new InvalidOperationException("Спиок изменился.");
+                    throw new InvalidOperationException("Список изменился.");
                 }
 
                 yield return items[i];
@@ -256,7 +262,7 @@ namespace ArrayListTask
 
         public void TrimExcess()
         {
-            int occupancyPercent = Count / Capacity * 100;
+            int occupancyPercent = (int)Math.Round((double)Count / Capacity * 100, MidpointRounding.AwayFromZero);
 
             if (occupancyPercent < 90)
             {
@@ -264,35 +270,33 @@ namespace ArrayListTask
             }
         }
 
-        public override bool Equals(object? obj)
+        public override bool Equals(object obj)
         {
             if (ReferenceEquals(obj, this))
             {
                 return true;
             }
 
-            if (ReferenceEquals(obj, null) || GetType() != obj.GetType())
+            if (obj is null || GetType() != obj.GetType())
             {
                 return false;
             }
 
             CustomList<T> list = (CustomList<T>)obj;
 
-            if (list.Capacity != Capacity)
-            {
-                return false;
-            }
-
             if (list.Count != Count)
             {
                 return false;
             }
 
-            for (int i = 0; i < Capacity; ++i)
+            for (int i = 0; i < Count; i++)
             {
-                if (!items[i].Equals(list.items[i]))
+                if (items[i] is not null)
                 {
-                    return false;
+                    if (!items[i].Equals(list.items[i]))
+                    {
+                        return false;
+                    }
                 }
             }
 
@@ -303,9 +307,11 @@ namespace ArrayListTask
         {
             int prime = 37;
             int hash = 1;
-            hash = prime * hash + Capacity;
-            hash = prime * hash + Count;
-            hash = prime * hash + (items != null ? items.GetHashCode() : 0);
+
+            for (int i = 0; i < Count; i++)
+            {
+                hash = prime * hash + items[i].GetHashCode();
+            }
 
             return hash;
         }
