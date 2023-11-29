@@ -1,6 +1,8 @@
-﻿namespace ShapesTask.Comparers
+﻿using ShapesTask.Shapes;
+
+namespace ShapesTask.Comparers
 {
-    public class PerimetersComparer : IComparer<IShape>
+    public class ShapePerimeterComparer : IComparer<IShape>
     {
         public int Compare(IShape shape1, IShape shape2)
         {
@@ -14,10 +16,7 @@
                 throw new ArgumentException("Параметр не может быть null", nameof(shape2));
             }
 
-            double shape1Perimeter = shape1.GetPerimeter();
-            double shape2Perimeter = shape2.GetPerimeter();
-
-            return shape1Perimeter.CompareTo(shape2Perimeter);
+            return shape1.GetPerimeter().CompareTo(shape2.GetPerimeter());
         }
     }
 }

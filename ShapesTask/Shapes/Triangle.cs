@@ -26,37 +26,37 @@
 
         public double GetWidth()
         {
-            return Math.Abs(Math.Max(Math.Max(X1, X2), X3) - Math.Min(Math.Min(X1, X2), X3));
+            return Math.Max(Math.Max(X1, X2), X3) - Math.Min(Math.Min(X1, X2), X3);
         }
 
         public double GetHeight()
         {
-            return Math.Abs(Math.Max(Math.Max(Y1, Y2), Y3) - Math.Min(Math.Min(Y1, Y2), Y3));
+            return Math.Max(Math.Max(Y1, Y2), Y3) - Math.Min(Math.Min(Y1, Y2), Y3);
         }
 
-        public double GetSide(double x1, double y1, double x2, double y2)
+        private static double GetSideLength(double x1, double y1, double x2, double y2)
         {
             return Math.Sqrt((x2 - x1) * (x2 - x1) + (y2 - y1) * (y2 - y1));
         }
 
         public double GetArea()
         {
-            double side1 = GetSide(X1, Y1, X2, Y2);
-            double side2 = GetSide(X1, Y1, X3, Y3);
-            double side3 = GetSide(X2, Y2, X3, Y3);
+            double sideLength1 = GetSideLength(X1, Y1, X2, Y2);
+            double sideLength2 = GetSideLength(X1, Y1, X3, Y3);
+            double sideLength3 = GetSideLength(X2, Y2, X3, Y3);
 
-            double triangleSemiPerimeter = GetPerimeter() / 2;
+            double triangleSemiPerimeter = (sideLength1 + sideLength2 + sideLength3) / 2;
 
-            return Math.Sqrt(triangleSemiPerimeter * (triangleSemiPerimeter - side1) * (triangleSemiPerimeter - side2) * (triangleSemiPerimeter - side3));
+            return Math.Sqrt(triangleSemiPerimeter * (triangleSemiPerimeter - sideLength1) * (triangleSemiPerimeter - sideLength2) * (triangleSemiPerimeter - sideLength3));
         }
 
         public double GetPerimeter()
         {
-            double side1 = GetSide(X1, Y1, X2, Y2);
-            double side2 = GetSide(X1, Y1, X3, Y3);
-            double side3 = GetSide(X2, Y2, X3, Y3);
+            double sideLength1 = GetSideLength(X1, Y1, X2, Y2);
+            double sideLength2 = GetSideLength(X1, Y1, X3, Y3);
+            double sideLength3 = GetSideLength(X2, Y2, X3, Y3);
 
-            return side1 + side2 + side3;
+            return sideLength1 + sideLength2 + sideLength3;
         }
 
         public override string ToString()
@@ -78,7 +78,8 @@
 
             Triangle triangle = (Triangle)obj;
 
-            return (X1 == triangle.X1) && (X2 == triangle.X2) && (X3 == triangle.X3) && (Y1 == triangle.Y1) && (Y2 == triangle.Y2) && (Y3 == triangle.Y3);
+            return (X1 == triangle.X1) && (X2 == triangle.X2) && (X3 == triangle.X3)
+                && (Y1 == triangle.Y1) && (Y2 == triangle.Y2) && (Y3 == triangle.Y3);
         }
 
         public override int GetHashCode()

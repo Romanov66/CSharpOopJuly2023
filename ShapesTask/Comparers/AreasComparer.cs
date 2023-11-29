@@ -1,6 +1,8 @@
-﻿namespace ShapesTask.Comparers
+﻿using ShapesTask.Shapes;
+
+namespace ShapesTask.Comparers
 {
-    public class AreasComparer : IComparer<IShape>
+    public class ShapeAreaComparer : IComparer<IShape>
     {
         public int Compare(IShape shape1, IShape shape2)
         {
@@ -14,10 +16,7 @@
                 throw new ArgumentException("Параметр не может быть null", nameof(shape2));
             }
 
-            double shape1Area = shape1.GetArea();
-            double shape2Area = shape2.GetArea();
-
-            return shape1Area.CompareTo(shape2Area);
+            return shape1.GetArea().CompareTo(shape2.GetArea());
         }
     }
 }

@@ -2,36 +2,36 @@
 {
     public class Square : IShape
     {
-        public double Side { get; set; }
+        public double SideLength { get; set; }
 
-        public Square(double side)
+        public Square(double sideLength)
         {
-            Side = side;
+            SideLength = sideLength;
         }
 
         public double GetHeight()
         {
-            return Side;
+            return SideLength;
         }
 
         public double GetWidth()
         {
-            return Side;
+            return SideLength;
         }
 
         public double GetArea()
         {
-            return Side * Side;
+            return SideLength * SideLength;
         }
 
         public double GetPerimeter()
         {
-            return Side * 4;
+            return SideLength * 4;
         }
 
         public override string ToString()
         {
-            return $"Квадрат с длиной сторон = {Side}";
+            return $"Квадрат с длиной сторон = {SideLength}";
         }
 
         public override bool Equals(object obj)
@@ -48,12 +48,12 @@
 
             Square square = (Square)obj;
 
-            return square.Side == Side;
+            return square.SideLength == SideLength;
         }
 
         public override int GetHashCode()
         {
-            return 37 * Side.GetHashCode();
+            return SideLength.GetHashCode();
         }
     }
 }

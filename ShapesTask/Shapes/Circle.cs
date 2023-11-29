@@ -53,7 +53,7 @@
 
         public override int GetHashCode()
         {
-            return 37 * Radius.GetHashCode();
+            return Radius.GetHashCode();
         }
     }
 }
