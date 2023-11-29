@@ -36,10 +36,10 @@
         {
             if (From > range.To || To < range.From)
             {
-                return new Range[] { new(From, To), new(range.From, range.To)};
+                return new Range[] { new(From, To), new(range.From, range.To) };
             }
 
-            return new Range[] { new (Math.Min(From, range.From), Math.Max(To, range.To)) };
+            return new Range[] { new(Math.Min(From, range.From), Math.Max(To, range.To)) };
         }
 
         public Range[] GetDifference(Range range)
@@ -54,12 +54,12 @@
                 return new Range[] { new(From, To) };
             }
 
-            if(From >= range.From && To > range.To)
+            if (From >= range.From && To > range.To)
             {
                 return new Range[] { new(range.To, To) };
             }
 
-            if(From < range.From && To <= range.To)
+            if (From < range.From && To <= range.To)
             {
                 return new Range[] { new(From, range.From) };
             }
