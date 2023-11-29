@@ -22,9 +22,9 @@
             Console.WriteLine("Значение удаленного элемента лежащего по индексу два: " + numbersList1.RemoveByIndex(2));
             Console.WriteLine("Список чисел после удаления значения элемента лежащего по индексу два: " + numbersList1);
 
-            bool isDelete = numbersList1.RemoveByData(18);
+            bool isRemoved = numbersList1.RemoveByData(18);
 
-            if (isDelete)
+            if (isRemoved)
             {
                 Console.WriteLine("Это распечатается, если элемент со значением 18 был удален.");
             }
@@ -34,7 +34,9 @@
             Console.WriteLine();
 
             SinglyLinkedList<int> numbersList2 = numbersList1.Copy();
+            numbersList2[1] = 10;
 
+            Console.WriteLine("Содержимое копии списка чисел: " + numbersList1);
             Console.WriteLine("Содержимое копии списка чисел: " + numbersList2);
             Console.WriteLine("Количество элементов оригинального списка чисел: " + numbersList1.Count);
             Console.WriteLine("Количество элементов копированного списка чисел: " + numbersList2.Count);
