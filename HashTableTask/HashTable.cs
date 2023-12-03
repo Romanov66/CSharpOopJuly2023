@@ -5,7 +5,7 @@ namespace HashTableTask
 {
     internal class HashTable<T> : ICollection<T>
     {
-        private List<T>[] lists;
+        private List<T>?[] lists;
         private int modCount;
 
         public int Count { get; private set; }
@@ -21,83 +21,90 @@ namespace HashTableTask
         {
             if (size <= 0)
             {
-                throw new ArgumentOutOfRangeException(nameof(size), $"Размер не можеть быть меньше, либо равен 0. Текущее значение = {size}.");
+                throw new ArgumentOutOfRangeException(nameof(size), $"Размер не может быть меньше, либо равен 0. Текущее значение = {size}.");
             }
 
             lists = new List<T>[size];
         }
 
-        public HashTable(ICollection<T> list)
+        public HashTable(ICollection<T> collection)
         {
-            if (list.Count == 0)
-            {
-                throw new ArgumentException("Передан пустой лист.", nameof(list));
-            }
-
-            if (list.Count <= 10)
+            if (collection.Count <= 10)
             {
                 lists = new List<T>[10];
             }
             else
             {
-                lists = new List<T>[list.Count];
+                lists = new List<T>[collection.Count];
             }
 
-            foreach (var e in list)
+            foreach (T e in collection)
             {
-                T element = e;
-                Add(element);
+                Add(e);
             }
         }
 
         public override string ToString()
         {
             StringBuilder stringBuilder = new();
+            stringBuilder.Append('[');
 
             for (int i = 0; i < lists.Length; i++)
             {
-                if (lists[i] != null)
+                List<T>? elements = lists[i];
+
+                if (elements is null)
                 {
-                    if (i == lists.Length - 1)
-                    {
-                        stringBuilder.Append($"[{string.Join(", ", lists[i])}]");
-                    }
-                    else
-                    {
-                        stringBuilder.Append($"[{string.Join(", ", lists[i])}]").Append(", ");
-                    }
+                    stringBuilder.Append("[]");
+                }
+                else
+                {
+                    stringBuilder
+                    .Append('[')
+                    .Append(string.Join(", ", elements))
+                    .Append(']')
+                    .Append(", ");
                 }
             }
 
-            return $"[{stringBuilder}]";
+            return stringBuilder
+                .Remove(stringBuilder.Length - 2, 2)
+                .Append(']')
+                .ToString();
+        }
+
+        private int GetIndex(T element)
+        {
+            if (element == null)
+            {
+                return -1;
+            }
+
+            return Math.Abs(element.GetHashCode() % lists.Length);
         }
 
         public void Add(T element)
         {
-            if (element != null)
-            {
-                int index = Math.Abs(element.GetHashCode() % lists.Length);
+            int index = GetIndex(element);
 
-                if (lists[index] is null)
-                {
-                    lists[index] = new List<T>();
-
-                    Count++;
-                }
-
-                lists[index].Add(element);
-
-                modCount++;
-            }
-        }
-
-        public void Clear()
-        {
-            if (lists.Length == 0)
+            if (index < 0)
             {
                 return;
             }
 
+            if (lists[index] is null)
+            {
+                lists[index] = new List<T>();
+            }
+
+            lists[index]?.Add(element);
+
+            Count++;
+            modCount++;
+        }
+
+        public void Clear()
+        {
             Array.Clear(lists);
 
             Count = 0;
@@ -106,19 +113,16 @@ namespace HashTableTask
 
         public bool Contains(T element)
         {
-            if (element == null)
+            int index = GetIndex(element);
+
+            if (index < 0)
             {
                 return false;
             }
 
-            int index = Math.Abs(element.GetHashCode() % lists.Length);
+            List<T>? elements = lists[index];
 
-            if (lists[index] is null)
-            {
-                return false;
-            }
-
-            return lists[index].Contains(element);
+            return elements != null ? elements.Contains(element) : false;
         }
 
         public void CopyTo(T[] array, int arrayIndex)
@@ -133,66 +137,63 @@ namespace HashTableTask
                 throw new ArgumentOutOfRangeException(nameof(arrayIndex), $"Индекс не должен быть меньше нуля. Индекс = {arrayIndex}.");
             }
 
-            List<T> allData = new();
+            if (Count > array.Length - arrayIndex)
+            {
+                throw new ArgumentException($"Копирование невозможно. Длинна массива с заданного индекса меньше, чем количество компонентов. Длинна массива с заданного индекса = {array.Length - arrayIndex}; количество компонентов = {Count}.", nameof(array));
+            }
 
             for (int i = 0; i < lists.Length; i++)
             {
-                for (int j = 0; j < lists[i].Count; j++)
+                List<T>? elements = lists[i];
+
+                if (elements != null)
                 {
-                    T element = lists[i][j];
-                    allData.Add(element);
+                    Array.Copy(elements.ToArray(), 0, array, arrayIndex, elements.Count);
+
+                    arrayIndex += elements.Count;
                 }
             }
-
-            if (allData.Count > array.Length - arrayIndex)
-            {
-                throw new ArgumentException($"Копирование невозможно. Длинна массива с заданного индекса меньше, чем количество компонентов. Длинна массива с заданного индекса = {array.Length - arrayIndex}; количество компонентов = {allData.Count}.", nameof(array));
-            }
-
-            Array.Copy(allData.ToArray(), 0, array, arrayIndex, allData.Count);
         }
 
         public bool Remove(T element)
         {
-            if (element == null)
+            int index = GetIndex(element);
+
+            if (index < 0)
             {
                 return false;
             }
 
-            int index = Math.Abs(element.GetHashCode() % lists.Length);
+            List<T>? elements = lists[index];
 
-            if (lists[index] is null)
+            bool isRemoved = elements != null ? elements.Remove(element) : false;
+
+            if (isRemoved)
             {
-                return false;
+                Count--;
+                modCount++;
             }
 
-            if (lists[index].Remove(element))
-            {
-                if (lists[index].Count == 0)
-                {
-                    Count--;
-                }
-
-                return true;
-            }
-
-            return false;
+            return isRemoved;
         }
 
         public IEnumerator<T> GetEnumerator()
         {
-            int startModCount = modCount;
+            int initialModCount = modCount;
 
-            for (int i = 0; i < lists.Length; ++i)
+            foreach (List<T>? elements in lists)
             {
-                if (startModCount != modCount)
+                if (elements != null)
                 {
-                    throw new InvalidOperationException("Недопускается изменять список.");
-                }
+                    foreach (T element in elements)
+                    {
+                        if (initialModCount != modCount)
+                        {
+                            throw new InvalidOperationException("Список изменен.");
+                        }
 
-                foreach (T element in lists[i])
-                {
-                    yield return element;
+                        yield return element;
+                    }
                 }
             }
         }

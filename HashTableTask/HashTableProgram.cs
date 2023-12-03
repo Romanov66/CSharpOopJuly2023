@@ -27,12 +27,12 @@
             Console.WriteLine("Хэш-таблица содержит компонент со значением 99: " + hashTable.Contains(99));
             Console.WriteLine();
 
-            int[] numbersArray = new int[15];
-            hashTable.CopyTo(numbersArray, 3);
+            int[] numbersArray = new int[12];
+            hashTable.CopyTo(numbersArray, 0);
 
             Console.WriteLine("Массив чисел: " + string.Join(", ", numbersArray));
             Console.WriteLine();
-            Console.WriteLine("Ниже представлен проход по хэш-таблицы с помощью конструкции foreach: ");
+            Console.WriteLine("Ниже представлен проход по хэш-таблицы с помощью конструкции foreach:");
 
             foreach (int number in hashTable)
             {
