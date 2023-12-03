@@ -21,7 +21,6 @@ namespace ListTask
                 ListItem<T> item = GetItem(index);
 
                 item.Data = value;
-
             }
         }
 
