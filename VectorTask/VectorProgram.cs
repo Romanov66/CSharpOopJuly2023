@@ -15,7 +15,7 @@
 
             vector1.Add(vector2);
             vector2.Subtract(vector3);
-            vector3.MyltiplyScalar(3);
+            vector3.MultiplyScalar(3);
 
             Console.WriteLine("Координаты первого вектора после прибавления второго = " + vector1);
             Console.WriteLine("Координаты второго вектора после вычитании третьего = " + vector2);
@@ -43,11 +43,11 @@
 
             vector1 = Vector.GetSum(vector1, vector3);
             vector2 = Vector.GetDifference(vector3, vector1);
-            vector3 = Vector.GetScalarProduct(vector1, vector2);
+            ;
 
             Console.WriteLine("Координаты первого вектора = " + vector1);
             Console.WriteLine("Координаты второго вектора = " + vector2);
-            Console.WriteLine("Координаты третьего вектора = " + vector3);
+            Console.WriteLine("Результат скалярного произведения первого и второго вектора = " + Vector.GetScalarProduct(vector1, vector2));
         }
     }
 }

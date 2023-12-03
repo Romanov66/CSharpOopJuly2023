@@ -4,35 +4,29 @@ namespace Academits.Romanov.VectorTask
 {
     public class Vector
     {
-        private double[] Coordinates;
+        private double[] coordinates;
 
-        public int Size
-        {
-            get
-            {
-                return Coordinates.Length;
-            }
-        }
+        public int Size => coordinates.Length;
 
         public double this[int index]
         {
             get
             {
-                if (index < 0 || index >= Coordinates.Length)
+                if (index < 0 || index >= coordinates.Length)
                 {
-                    throw new ArgumentOutOfRangeException($"Некорректное значение. Индекс не может быть меньше 0 и больше количества компонентов. Текущее значение: {index}", nameof(index));
+                    throw new ArgumentOutOfRangeException(nameof(index), $"Индекс не должен выходить за границы массива. Допустимые границы: от 0 до {coordinates.Length}. Текущее значение индекса: {index}");
                 }
 
-                return Coordinates[index];
+                return coordinates[index];
             }
             set
             {
-                if (index < 0 || index >= Coordinates.Length)
+                if (index < 0 || index >= coordinates.Length)
                 {
-                    throw new ArgumentOutOfRangeException($"Некорректное значение. Индекс не может быть меньше 0 и больше количества компонентов. Текущее значение: {index}", nameof(index));
+                    throw new ArgumentOutOfRangeException(nameof(index), $"Индекс не должен выходить за границы массива. Допустимые границы: от 0 до {coordinates.Length}. Текущее значение индекса: {index}");
                 }
 
-                Coordinates[index] = value;
+                coordinates[index] = value;
             }
         }
 
@@ -43,31 +37,21 @@ namespace Academits.Romanov.VectorTask
                 throw new ArgumentException($"Размерность вектора не может быть <= 0! Текущее значение = {size}", nameof(size));
             }
 
-            Coordinates = new double[size];
+            coordinates = new double[size];
         }
 
         public Vector(Vector vector)
         {
-            if (vector.Size <= 0)
-            {
-                throw new ArgumentException($"Размерность переданного вектора не может быть <= 0! Текущее значение = {vector.Size}", nameof(vector.Size));
-            }
+            coordinates = new double[vector.Size];
 
-            Coordinates = new double[vector.Size];
-
-            Array.Copy(vector.Coordinates, Coordinates, vector.Size);
+            Array.Copy(vector.coordinates, coordinates, vector.Size);
         }
 
         public Vector(double[] coordinates)
         {
-            if (coordinates.Length <= 0)
-            {
-                throw new ArgumentException($"Размерность переданного вектора не может быть <= 0! Текущее значение = {coordinates.Length}", nameof(coordinates.Length));
-            }
+            this.coordinates = new double[coordinates.Length];
 
-            Coordinates = new double[coordinates.Length];
-
-            Array.Copy(coordinates, Coordinates, coordinates.Length);
+            Array.Copy(coordinates, this.coordinates, coordinates.Length);
         }
 
         public Vector(int size, double[] coordinates)
@@ -77,45 +61,42 @@ namespace Academits.Romanov.VectorTask
                 throw new ArgumentException($"Размерность вектора не может быть <= 0! Текущее значение = {size}", nameof(size));
             }
 
-            if (size > coordinates.Length)
-            {
-                Array.Resize(ref coordinates, size);
-            }
+            this.coordinates = new double[size];
 
-            Coordinates = new double[size];
-
-            Array.Copy(coordinates, Coordinates, size);
+            Array.Copy(coordinates, this.coordinates, coordinates.Length);
         }
 
         public override string ToString()
         {
-            StringBuilder stringBuilder = new StringBuilder();
-
-            for (int i = 0; i < Size; i++)
+            if (Size == 0)
             {
-                if (i == Size - 1)
-                {
-                    stringBuilder.Append($"{Coordinates[i]}");
-                }
-                else
-                {
-                    stringBuilder.Append($"{Coordinates[i]}, ");
-                }
+                return "{}";
             }
 
-            return $"{{{stringBuilder}}}";
+            StringBuilder stringBuilder = new();
+            stringBuilder.Append('{');
+
+            foreach (double coordinate in coordinates)
+            {
+                stringBuilder.Append($"{coordinate}, ");
+            }
+
+            return stringBuilder
+                .Remove(stringBuilder.Length - 2, 2)
+                .Append('}')
+                .ToString();
         }
 
         public void Add(Vector vector)
         {
             if (vector.Size > Size)
             {
-                Array.Resize(ref Coordinates, vector.Size);
+                Array.Resize(ref coordinates, vector.Size);
             }
 
             for (int i = 0; i < vector.Size; i++)
             {
-                Coordinates[i] = Coordinates[i] + vector[i];
+                coordinates[i] += vector[i];
             }
         }
 
@@ -123,42 +104,38 @@ namespace Academits.Romanov.VectorTask
         {
             if (vector.Size > Size)
             {
-                Array.Resize(ref Coordinates, vector.Size);
+                Array.Resize(ref coordinates, vector.Size);
             }
 
             for (int i = 0; i < vector.Size; i++)
             {
-                if (Coordinates[i] == 0)
+                if (coordinates[i] != 0)
                 {
-                    Coordinates[i] = 0;
-                }
-                else
-                {
-                    Coordinates[i] = Coordinates[i] - vector[i];
+                    coordinates[i] -= vector[i];
                 }
             }
         }
 
-        public void MyltiplyScalar(double scalar)
+        public void MultiplyScalar(double scalar)
         {
             for (int i = 0; i < Size; i++)
             {
-                Coordinates[i] = Coordinates[i] * scalar;
+                coordinates[i] *= scalar;
             }
         }
 
         public void Reverse()
         {
-            MyltiplyScalar(-1);
+            MultiplyScalar(-1);
         }
 
         public double GetLength()
         {
             double sum = 0;
 
-            for (int i = 0; i < Size; i++)
+            foreach (double coordinate in coordinates)
             {
-                sum += Coordinates[i] * Coordinates[i];
+                sum += coordinate * coordinate;
             }
 
             return Math.Sqrt(sum);
@@ -185,7 +162,7 @@ namespace Academits.Romanov.VectorTask
 
             for (int i = 0; i < Size; i++)
             {
-                if (Coordinates[i] != vector[i])
+                if (coordinates[i] != vector[i])
                 {
                     return false;
                 }
@@ -201,7 +178,7 @@ namespace Academits.Romanov.VectorTask
 
             for (int i = 0; i < Size; i++)
             {
-                hash = prime * hash + Coordinates[i].GetHashCode();
+                hash = prime * hash + coordinates[i].GetHashCode();
             }
 
             return hash;
@@ -223,21 +200,17 @@ namespace Academits.Romanov.VectorTask
             return differenceVector;
         }
 
-        public static Vector GetScalarProduct(Vector vector1, Vector vector2)
+        public static double GetScalarProduct(Vector vector1, Vector vector2)
         {
-            if (vector1.Size < vector2.Size)
+            int minLength = Math.Min(vector1.Size, vector2.Size);
+            double scalarProduct = 0;
+
+            for (int i = 0; i < minLength; i++)
             {
-                Array.Resize(ref vector1.Coordinates, vector2.Size);
+                scalarProduct += vector1[i] * vector2[i];
             }
 
-            Vector scalarProductVector = new Vector(vector1.Size);
-
-            for (int i = 0; i < scalarProductVector.Size; i++)
-            {
-                scalarProductVector[i] = vector1[i] * vector2[i];
-            }
-
-            return scalarProductVector;
+            return scalarProduct;
         }
     }
 }
