@@ -4,42 +4,75 @@
     {
         static void Main(string[] args)
         {
-            List<int> numbers = new();
+            List<string> verseLines = new();
 
-            using (StreamReader reader = new("..\\..\\..\\Numbers.txt"))
+            try
             {
+                using StreamReader reader = new("..\\..\\..\\Verse.txt");
+
                 string currentLine;
 
                 while ((currentLine = reader.ReadLine()) != null)
                 {
-                    numbers.Add(Convert.ToInt32(currentLine));
+                    verseLines.Add(currentLine);
                 }
+            }
+            catch (FileNotFoundException e)
+            {
+                Console.WriteLine("Файл с таким название отсутствует: " + e);
+                throw;
+            }
+
+            Console.WriteLine("А вы могли бы?");
+
+            foreach (string line in verseLines)
+            {
+                Console.WriteLine(line);
+            }
+
+            List<int> numbers = new()
+            {
+                2,
+                24,
+                255,
+                13,
+                37,
+                48,
+                13,
+                99,
+                255,
+                47,
+                37,
+                24,
+                99,
+                6,
+                13
             };
 
-            Console.WriteLine("Список после чтения файла: " + string.Join(", ", numbers.ToArray()));
+            Console.WriteLine();
 
             for (int i = 0; i < numbers.Count; i++)
             {
-                if (numbers[i] % 2 != 0)
+                if (numbers[i] % 2 == 0)
                 {
                     numbers.RemoveAt(i);
                     i--;
                 }
             }
 
-            Console.WriteLine("Список после удаления нечетных чисел: " + string.Join(", ", numbers.ToArray()));
+            Console.WriteLine("Список после удаления четных чисел: " + string.Join(", ", numbers));
 
-            List<int> uniqNumbers = new();
+            List<int> uniqueNumbers = new();
 
             for (int i = 0; i < numbers.Count; i++)
             {
-                if (numbers.IndexOf(numbers[i], i + 1) == -1)
+                if (uniqueNumbers.IndexOf(numbers[i]) == -1)
                 {
-                    uniqNumbers.Add(numbers[i]);
+                    uniqueNumbers.Add(numbers[i]);
                 }
             }
 
-            Console.WriteLine("Уникальные числа списка: " + string.Join(", ", uniqNumbers.ToArray()));
+            Console.WriteLine("Уникальные числа списка: " + string.Join(", ", uniqueNumbers));
         }
     }
 }
