@@ -1,10 +1,10 @@
 ﻿namespace TreeTask
 {
-    internal class TreeProgram
+    internal class Program
     {
         static void Main(string[] args)
         {
-            BinaryTree<int> numbersTree = new BinaryTree<int>();
+            BinarySearchTree<int> numbersTree = new BinarySearchTree<int>();
 
             numbersTree.Add(8);
             numbersTree.Add(3);
@@ -34,12 +34,12 @@
             Console.WriteLine();
             Console.WriteLine("Обход дерева в глубину:");
 
-            numbersTree.GoAroundInDepthCyclically(data => Console.Write(data + " "));
+            numbersTree.GoAroundInDepth(data => Console.Write(data + " "));
 
             Console.WriteLine();
             Console.WriteLine("Обход дерева в глубину с рекурсией:");
 
-            numbersTree.GoAroundInDepth(data => Console.Write(data + " "));
+            numbersTree.GoAroundInDepthRecursively(data => Console.Write(data + " "));
         }
     }
 }
