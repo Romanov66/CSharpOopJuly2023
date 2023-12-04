@@ -4,26 +4,27 @@
     {
         static void Main(string[] args)
         {
-            Person person1 = new Person("Иван", 26);
-            Person person2 = new Person("Мария", 16);
-            Person person3 = new Person("Евгений", 19);
-            Person person4 = new Person("Эрнест", 34);
-            Person person5 = new Person("Полина", 27);
-            Person person6 = new Person("Олег", 52);
-            Person person7 = new Person("Иван", 15);
-            Person person8 = new Person("Олег", 7);
+            List<Person> persons = new()
+            {
+                new Person("Иван", 26),
+                new Person("Мария", 16),
+                new Person("Евгений", 19),
+                new Person("Эрнест", 34),
+                new Person("Полина", 27),
+                new Person("Олег", 52),
+                new Person("Иван", 15),
+                new Person("Олег", 7)
+            };
 
-            List<Person> persons = new List<Person> { person1, person2, person3, person4, person5, person6, person7, person8 };
-
-            List<string> uniqNamesList = persons
-                .Select(person => person.Name)
+            List<string> uniqueNames = persons
+                .Select(p => p.Name)
                 .Distinct()
                 .ToList();
 
-            Console.WriteLine("Уникальные имена в коллекции: " + string.Join(", ", uniqNamesList));
+            Console.WriteLine("Уникальные имена в коллекции: " + string.Join(", ", uniqueNames));
 
             List<Person> minors = persons
-                .Where(person => person.Age < 18)
+                .Where(p => p.Age < 18)
                 .ToList();
 
             Console.WriteLine();
@@ -34,39 +35,33 @@
                 Console.WriteLine(person.Name);
             }
 
-            int minorsMiddleAge = (int)Math.Round(minors
-                .Select(person => person.Age)
-                .Average(), MidpointRounding.AwayFromZero);
+            double minorsAverageAge = minors.Average(p => p.Age);
 
             Console.WriteLine();
-            Console.WriteLine("Средний возраст несовершеннолетних: " + minorsMiddleAge);
+            Console.WriteLine("Средний возраст несовершеннолетних: " + minorsAverageAge);
             Console.WriteLine();
 
-            Dictionary<string, int> personsByName = persons
-                .GroupBy(person => person.Name)
-                .ToDictionary(person => person.Key, person =>
+            Dictionary<string, double> averageAge = persons
+                .GroupBy(p => p.Name)
+                .ToDictionary(p => p.Key, p =>
                 {
-                    double middleAge = person
-                    .Select(person => person.Age)
-                    .Average();
-
-                    return (int)Math.Round(middleAge, MidpointRounding.AwayFromZero);
+                    return p.Average(p => p.Age);
                 });
 
-            foreach (KeyValuePair<string, int> person in personsByName)
+            foreach (KeyValuePair<string, double> person in averageAge)
             {
-                Console.WriteLine("Имя: {0}, средний возраст по данному имени: {1}", person.Key, person.Value);
+                Console.WriteLine("Имя: {0}, средний возраст: {1}", person.Key, person.Value);
             }
 
-            List<Person> personsByMatureAge = persons
-                .Where(person => person.Age >= 20 && person.Age <= 45)
-                .OrderByDescending(person => person.Age)
+            List<Person> matureAge = persons
+                .Where(p => p.Age >= 20 && p.Age <= 45)
+                .OrderByDescending(p => p.Age)
                 .ToList();
 
             Console.WriteLine();
-            Console.WriteLine("Имя людей, чей возраст перечислен в порядке убывания и находится в диапазоне от 20 до 45 лет:");
+            Console.WriteLine("Перечень людей, чей возраст от 20 до 45 лет:");
 
-            foreach (Person person in personsByMatureAge)
+            foreach (Person person in matureAge)
             {
                 Console.WriteLine("Имя: {0}, возраст: {1}", person.Name, person.Age);
             }

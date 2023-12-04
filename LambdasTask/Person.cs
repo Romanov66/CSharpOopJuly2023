@@ -26,7 +26,7 @@
             {
                 if (value <= 0)
                 {
-                    throw new ArgumentException("Возраст не может быть меньше нуля", nameof(value));
+                    throw new ArgumentException("Возраст не может быть меньше, либо равен нулю", nameof(value));
                 }
 
                 age = value;
