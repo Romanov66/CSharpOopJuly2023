@@ -5,8 +5,9 @@ namespace ArrayListTask
 {
     public class CustomList<T> : IList<T>
     {
+        private const int DefaultCapacity = 10;
+
         private T[] items;
-        private const int defaultSize = 10;
         private int modCount;
 
         public int Count { get; private set; }
@@ -18,9 +19,9 @@ namespace ArrayListTask
             get => items.Length;
             set
             {
-                if (value < 0 || value < Count)
+                if (value < Count)
                 {
-                    throw new ArgumentException($"Значение не должно быть меньше 0 и количества элементов в списке. Value = {value}; количество элементов = {Count}", nameof(value));
+                    throw new ArgumentException($"Вместимость не должна быть меньше количества элементов в списке. Value = {value}; количество элементов = {Count}", nameof(value));
                 }
 
                 if (value == items.Length)
@@ -34,14 +35,14 @@ namespace ArrayListTask
 
         public CustomList()
         {
-            items = new T[defaultSize];
+            items = new T[DefaultCapacity];
         }
 
         public CustomList(int capacity)
         {
             if (capacity < 0)
             {
-                throw new ArgumentOutOfRangeException(nameof(capacity), $"Размер списка не может быть меньше нуля. Capacity = {capacity}.");
+                throw new ArgumentOutOfRangeException(nameof(capacity), $"Вместимость списка не может быть меньше нуля. Capacity = {capacity}.");
             }
 
             items = new T[capacity];
@@ -49,11 +50,6 @@ namespace ArrayListTask
 
         public CustomList(T[] items)
         {
-            if (items.Length == 0)
-            {
-                throw new ArgumentException($"Массив не должен быть пустым.", nameof(items));
-            }
-
             this.items = new T[items.Length];
             Array.Copy(items, 0, this.items, 0, items.Length);
 
@@ -67,45 +63,46 @@ namespace ArrayListTask
                 CheckIndex(index);
 
                 return items[index];
-
             }
 
             set
             {
                 CheckIndex(index);
-
                 items[index] = value;
+
+                modCount++;
             }
         }
 
-        private bool CheckIndex(int index)
+        private void CheckIndex(int index)
         {
             if (index < 0 || index >= Capacity)
             {
-                throw new ArgumentOutOfRangeException(nameof(index), $"Индекс не должен быть меньше нуля и больше, либо равен размеру списка. Размер списка = {Capacity}. Индекс = {index}");
+                throw new ArgumentOutOfRangeException(nameof(index), $"Индекс не должен быть меньше нуля и больше, либо равен вместимости списка. Размер списка = {Capacity}. Индекс = {index}");
             }
-
-            return true;
         }
 
         public override string ToString()
         {
-            StringBuilder stringBuilder = new StringBuilder();
+            if (Count == 0)
+            {
+                return "[]";
+            }
+
+            StringBuilder stringBuilder = new();
             stringBuilder.Append('[');
 
             for (int i = 0; i < Count; i++)
             {
-                if (i == Count - 1)
-                {
-                    stringBuilder.Append($"{items[i]}");
-                }
-                else
-                {
-                    stringBuilder.Append($"{items[i]}, ");
-                }
+                stringBuilder
+                    .Append(items[i])
+                    .Append(", ");
             }
 
-            return stringBuilder.Append(']').ToString();
+            return stringBuilder
+                .Remove(stringBuilder.Length - 2, 2)
+                .Append(']').
+                 ToString();
         }
 
         public void Add(T item)
@@ -125,7 +122,7 @@ namespace ArrayListTask
         {
             if (Capacity == 0)
             {
-                items = new T[defaultSize];
+                Capacity = DefaultCapacity;
             }
             else
             {
@@ -146,12 +143,12 @@ namespace ArrayListTask
 
         public bool Contains(T item)
         {
-            if (Count == 0)
+            if (IndexOf(item) < 0)
             {
                 return false;
             }
 
-            return Array.IndexOf(items, item, 0, Count) > -1;
+            return true;
         }
 
         public void CopyTo(T[] items, int startIndex)
@@ -176,14 +173,12 @@ namespace ArrayListTask
 
         public bool Remove(T item)
         {
-            try
-            {
-                RemoveAt(Array.IndexOf(items, item, 0, Count));
-            }
-            catch (ArgumentOutOfRangeException)
+            if (IndexOf(item) < 0)
             {
                 return false;
             }
+
+            RemoveAt(IndexOf(item));
 
             return true;
         }
@@ -212,32 +207,24 @@ namespace ArrayListTask
         {
             CheckIndex(index);
 
-            if (Count >= Capacity)
+            if (Count == Capacity)
             {
                 IncreaseCapacity();
             }
 
-            for (int i = Count - 1; i > index - 1; i--)
+            if (index == Count)
             {
-                items[i] = items[i + 1];
+                items[index] = item;
+
+                return;
             }
 
+            Array.Copy(items, index, items, index + 1, Count - index);
+
             items[index] = item;
-            /*
-            T outerTemp = items[index];
 
-            for (int i = index; i < Capacity; i++)
-            {
-                if (i == index)
-                {
-                    items[i] = item;
-                    continue;
-                }
-
-                T innerTemp = items[i];
-                items[i] = outerTemp;
-                outerTemp = innerTemp;
-            }*/
+            Count++;
+            modCount++;
         }
 
         public IEnumerator<T> GetEnumerator()
@@ -277,7 +264,7 @@ namespace ArrayListTask
                 return true;
             }
 
-            if (obj is null || GetType() != obj.GetType())
+            if (obj is null || this is null || GetType() != obj.GetType())
             {
                 return false;
             }
@@ -291,12 +278,9 @@ namespace ArrayListTask
 
             for (int i = 0; i < Count; i++)
             {
-                if (items[i] is not null)
+                if (!items[i].Equals(list.items[i]))
                 {
-                    if (!items[i].Equals(list.items[i]))
-                    {
-                        return false;
-                    }
+                    return false;
                 }
             }
 
@@ -310,7 +294,10 @@ namespace ArrayListTask
 
             for (int i = 0; i < Count; i++)
             {
-                hash = prime * hash + items[i].GetHashCode();
+                if (items[i] is not null)
+                {
+                    hash = prime * hash + items[i].GetHashCode();
+                }
             }
 
             return hash;

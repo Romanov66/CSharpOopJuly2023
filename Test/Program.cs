@@ -1,7 +1,7 @@
 ﻿namespace Test
 {
     internal class Program
-    {
+    {/*
         static void Main(string[] args)
         {
             int a = 7;
@@ -10,6 +10,6 @@
             //int result = a.CompareTo(b);
 
             Console.WriteLine(c);
-        }
+        }*/
     }
 }

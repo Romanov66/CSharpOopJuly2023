@@ -78,14 +78,14 @@
             Console.WriteLine("Индекс элемента 5 = " + numbersList.IndexOf(5));
             Console.WriteLine("Индекс элемента 35 = " + numbersList.IndexOf(35));
 
-            numbersList.Insert(9, 10);
+            numbersList.Insert(5, 25);
 
             Console.WriteLine();
             Console.WriteLine("Характеристики списка после применения метода Insert: " + numbersList);
 
-            int[] postalCodes1 = new int[] { 6300089, 6300090, 6300091 };
-            int[] postalCodes2 = new int[] { 6300089, 6300090, 6300091 };
-            int[] postalCodes3 = new int[] { 6300089, 6300093, 6300091 };
+            int[] postalCodes1 = { 6300089, 6300090, 6300091 };
+            int[] postalCodes2 = { 6300089, 6300090, 6300091 };
+            int[] postalCodes3 = { 6300089, 6300093, 6300091 };
 
             CustomList<int> postalOffice1 = new CustomList<int>(postalCodes1);
             CustomList<int> postalOffice2 = new CustomList<int>(postalCodes2);

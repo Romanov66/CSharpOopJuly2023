@@ -13,7 +13,7 @@
 
             Count++;
             modCount++;
-        }*/
+        }
             if (array is null)
             {
                 throw new ArgumentNullException(nameof(array), "Массив не может быть null");
@@ -29,6 +29,6 @@
                 throw new ArgumentException("Количество компонентов исходного списка больше, чем конечный индекс массива", nameof(array));
             }
 
-            Array.Copy(lists, 0, array, 0, lists.Length);
+            Array.Copy(lists, 0, array, 0, lists.Length);*/
     }
 }
