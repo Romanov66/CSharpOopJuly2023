@@ -15,35 +15,30 @@ namespace ShapesTask
                 new Circle(13)
             };
 
-            Console.WriteLine("Фигура с максимальной площадью: " + GetShapeByMaxArea(shapes));
-            Console.WriteLine("Фигура со вторым по величине периметром: " + GetShapeBySecondPerimeter(shapes));
+            Console.WriteLine("Фигура с максимальной площадью: " + GetShapeWithMaxArea(shapes));
+            Console.WriteLine("Фигура со вторым по величине периметром: " + GetShapeWithSecondPerimeter(shapes));
         }
 
-        public static IShape GetShapeByMaxArea(IShape[] shapes)
+        public static IShape GetShapeWithMaxArea(IShape[] shapes)
         {
             if (shapes.Length == 0)
             {
                 return null;
             }
 
-            Array.Sort(shapes, new ShapeAreaComparer());
+            Array.Sort(shapes, new AreasComparer());
 
             return shapes[^1];
         }
 
-        public static IShape GetShapeBySecondPerimeter(IShape[] shapes)
+        public static IShape GetShapeWithSecondPerimeter(IShape[] shapes)
         {
-            if (shapes.Length == 0)
+            if (shapes.Length <= 1)
             {
                 return null;
             }
 
-            if (shapes.Length == 1)
-            {
-                return shapes[0];
-            }
-
-            Array.Sort(shapes, new ShapePerimeterComparer());
+            Array.Sort(shapes, new PerimetersComparer());
 
             return shapes[^2];
         }

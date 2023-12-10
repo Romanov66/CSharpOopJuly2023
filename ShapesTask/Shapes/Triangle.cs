@@ -41,22 +41,22 @@
 
         public double GetArea()
         {
-            double sideLength1 = GetSideLength(X1, Y1, X2, Y2);
-            double sideLength2 = GetSideLength(X1, Y1, X3, Y3);
-            double sideLength3 = GetSideLength(X2, Y2, X3, Y3);
+            double firstSideLength = GetSideLength(X1, Y1, X2, Y2);
+            double secondSideLength = GetSideLength(X1, Y1, X3, Y3);
+            double thirdSideLength = GetSideLength(X2, Y2, X3, Y3);
 
-            double triangleSemiPerimeter = (sideLength1 + sideLength2 + sideLength3) / 2;
+            double triangleSemiPerimeter = (firstSideLength + secondSideLength + thirdSideLength) / 2;
 
-            return Math.Sqrt(triangleSemiPerimeter * (triangleSemiPerimeter - sideLength1) * (triangleSemiPerimeter - sideLength2) * (triangleSemiPerimeter - sideLength3));
+            return Math.Sqrt(triangleSemiPerimeter * (triangleSemiPerimeter - firstSideLength) * (triangleSemiPerimeter - secondSideLength) * (triangleSemiPerimeter - thirdSideLength));
         }
 
         public double GetPerimeter()
         {
-            double sideLength1 = GetSideLength(X1, Y1, X2, Y2);
-            double sideLength2 = GetSideLength(X1, Y1, X3, Y3);
-            double sideLength3 = GetSideLength(X2, Y2, X3, Y3);
+            double firstSideLength = GetSideLength(X1, Y1, X2, Y2);
+            double secondSideLength = GetSideLength(X1, Y1, X3, Y3);
+            double thirdSideLength = GetSideLength(X2, Y2, X3, Y3);
 
-            return sideLength1 + sideLength2 + sideLength3;
+            return firstSideLength + secondSideLength + thirdSideLength;
         }
 
         public override string ToString()
