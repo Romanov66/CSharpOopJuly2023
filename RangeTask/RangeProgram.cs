@@ -4,8 +4,8 @@
     {
         static void Main(string[] args)
         {
-            Range range1 = new Range(14, 58);
-            Range range2 = new Range(16, 32);
+            Range range1 = new Range(1, 7);
+            Range range2 = new Range(3, 5);
 
             Console.WriteLine("Длина первого интервала составляет: " + range1.GetLength());
             Console.WriteLine("Длина воторого интервала составляет: " + range2.GetLength());
@@ -24,7 +24,7 @@
 
             Console.WriteLine();
 
-            Range intersection = range1.GetIntersection(range2);
+            Range? intersection = range1.GetIntersection(range2);
 
             if (intersection is null)
             {
@@ -39,12 +39,12 @@
 
             Range[] union = range1.GetUnion(range2);
 
-            Console.WriteLine("Координаты интервала-объединения: " + string.Join<Range>(", ", union));
+            Console.WriteLine($"Координаты интервала-объединения: [{string.Join<Range>(", ", union)}]");
             Console.WriteLine();
 
             Range[] difference = range1.GetDifference(range2);
 
-            Console.WriteLine("Координаты разности интервалов: " + string.Join<Range>(", ", difference));
+            Console.WriteLine($"Координаты разности интервалов: [{string.Join<Range>(", ", difference)}]");
             Console.WriteLine();
         }
     }
