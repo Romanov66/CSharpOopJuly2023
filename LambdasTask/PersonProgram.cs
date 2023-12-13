@@ -41,19 +41,16 @@
             Console.WriteLine("Средний возраст несовершеннолетних: " + minorsAverageAge);
             Console.WriteLine();
 
-            Dictionary<string, double> averageAge = persons
+            Dictionary<string, double> personsByNames = persons
                 .GroupBy(p => p.Name)
-                .ToDictionary(p => p.Key, p =>
-                {
-                    return p.Average(p => p.Age);
-                });
+                .ToDictionary(g => g.Key, g => g.Average(g => g.Age));
 
-            foreach (KeyValuePair<string, double> person in averageAge)
+            foreach (KeyValuePair<string, double> personsGroup in personsByNames)
             {
-                Console.WriteLine("Имя: {0}, средний возраст: {1}", person.Key, person.Value);
+                Console.WriteLine("Имя: {0}, средний возраст: {1}", personsGroup.Key, personsGroup.Value);
             }
 
-            List<Person> matureAge = persons
+            List<Person> mature = persons
                 .Where(p => p.Age >= 20 && p.Age <= 45)
                 .OrderByDescending(p => p.Age)
                 .ToList();
@@ -61,7 +58,7 @@
             Console.WriteLine();
             Console.WriteLine("Перечень людей, чей возраст от 20 до 45 лет:");
 
-            foreach (Person person in matureAge)
+            foreach (Person person in mature)
             {
                 Console.WriteLine("Имя: {0}, возраст: {1}", person.Name, person.Age);
             }
