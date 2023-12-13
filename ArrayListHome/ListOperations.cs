@@ -4,7 +4,7 @@
     {
         static void Main(string[] args)
         {
-            List<string> verseLines = new();
+            List<string> lines = new();
 
             try
             {
@@ -14,39 +14,24 @@
 
                 while ((currentLine = reader.ReadLine()) != null)
                 {
-                    verseLines.Add(currentLine);
+                    lines.Add(currentLine);
                 }
             }
             catch (FileNotFoundException e)
             {
-                Console.WriteLine("Файл с таким название отсутствует: " + e);
-                throw;
+                Console.WriteLine("Файл с таким названием отсутствует: " + e);
             }
 
             Console.WriteLine("А вы могли бы?");
 
-            foreach (string line in verseLines)
+            foreach (string line in lines)
             {
                 Console.WriteLine(line);
             }
 
             List<int> numbers = new()
             {
-                2,
-                24,
-                255,
-                13,
-                37,
-                48,
-                13,
-                99,
-                255,
-                47,
-                37,
-                24,
-                99,
-                6,
-                13
+                2, 24, 255, 13, 37, 48, 13, 99, 255, 47, 37, 24, 99, 6, 13
             };
 
             Console.WriteLine();
@@ -62,13 +47,13 @@
 
             Console.WriteLine("Список после удаления четных чисел: " + string.Join(", ", numbers));
 
-            List<int> uniqueNumbers = new();
+            List<int> uniqueNumbers = new(numbers.Count);
 
-            for (int i = 0; i < numbers.Count; i++)
+            foreach (int number in numbers)
             {
-                if (uniqueNumbers.IndexOf(numbers[i]) == -1)
+                if (!uniqueNumbers.Contains(number))
                 {
-                    uniqueNumbers.Add(numbers[i]);
+                    uniqueNumbers.Add(number);
                 }
             }
 
