@@ -12,18 +12,18 @@ namespace Academits.Romanov.VectorTask
         {
             get
             {
-                if (index < 0 || index >= coordinates.Length)
+                if (index < 0 || index >= Size)
                 {
-                    throw new ArgumentOutOfRangeException(nameof(index), $"Индекс не должен выходить за границы массива. Допустимые границы: от 0 до {coordinates.Length}. Текущее значение индекса: {index}");
+                    throw new ArgumentOutOfRangeException(nameof(index), $"Индекс не должен выходить за границы массива. Допустимые границы: от 0 до {Size - 1}. Текущее значение индекса: {index}");
                 }
 
                 return coordinates[index];
             }
             set
             {
-                if (index < 0 || index >= coordinates.Length)
+                if (index < 0 || index >= Size)
                 {
-                    throw new ArgumentOutOfRangeException(nameof(index), $"Индекс не должен выходить за границы массива. Допустимые границы: от 0 до {coordinates.Length}. Текущее значение индекса: {index}");
+                    throw new ArgumentOutOfRangeException(nameof(index), $"Индекс не должен выходить за границы массива. Допустимые границы: от 0 до {Size - 1}. Текущее значение индекса: {index}");
                 }
 
                 coordinates[index] = value;
@@ -49,6 +49,11 @@ namespace Academits.Romanov.VectorTask
 
         public Vector(double[] coordinates)
         {
+            if (coordinates.Length == 0)
+            {
+                throw new ArgumentException("Длина массива должна быть больше нуля!");
+            }
+
             this.coordinates = new double[coordinates.Length];
 
             Array.Copy(coordinates, this.coordinates, coordinates.Length);
@@ -56,9 +61,14 @@ namespace Academits.Romanov.VectorTask
 
         public Vector(int size, double[] coordinates)
         {
-            if (size <= 0)
+            if (coordinates.Length == 0)
             {
-                throw new ArgumentException($"Размерность вектора не может быть <= 0! Текущее значение = {size}", nameof(size));
+                throw new ArgumentException("Длина массива должна быть больше нуля!");
+            }
+
+            if (size <= 0 || size < coordinates.Length)
+            {
+                throw new ArgumentException($"Размерность вектора не может быть <= 0, либо меньше длины массива! Размерность вектора = {size}, длина массива: {coordinates.Length}", nameof(size));
             }
 
             this.coordinates = new double[size];
@@ -68,17 +78,14 @@ namespace Academits.Romanov.VectorTask
 
         public override string ToString()
         {
-            if (Size == 0)
-            {
-                return "{}";
-            }
-
             StringBuilder stringBuilder = new();
             stringBuilder.Append('{');
 
             foreach (double coordinate in coordinates)
             {
-                stringBuilder.Append($"{coordinate}, ");
+                stringBuilder
+                    .Append(coordinate)
+                    .Append(", ");
             }
 
             return stringBuilder
@@ -96,7 +103,7 @@ namespace Academits.Romanov.VectorTask
 
             for (int i = 0; i < vector.Size; i++)
             {
-                coordinates[i] += vector[i];
+                coordinates[i] += vector.coordinates[i];
             }
         }
 
@@ -109,14 +116,11 @@ namespace Academits.Romanov.VectorTask
 
             for (int i = 0; i < vector.Size; i++)
             {
-                if (coordinates[i] != 0)
-                {
-                    coordinates[i] -= vector[i];
-                }
+                coordinates[i] -= vector.coordinates[i];
             }
         }
 
-        public void MultiplyScalar(double scalar)
+        public void MultiplyByScalar(double scalar)
         {
             for (int i = 0; i < Size; i++)
             {
@@ -126,7 +130,7 @@ namespace Academits.Romanov.VectorTask
 
         public void Reverse()
         {
-            MultiplyScalar(-1);
+            MultiplyByScalar(-1);
         }
 
         public double GetLength()
@@ -162,7 +166,7 @@ namespace Academits.Romanov.VectorTask
 
             for (int i = 0; i < Size; i++)
             {
-                if (coordinates[i] != vector[i])
+                if (coordinates[i] != vector.coordinates[i])
                 {
                     return false;
                 }
@@ -176,9 +180,9 @@ namespace Academits.Romanov.VectorTask
             const int prime = 37;
             int hash = 1;
 
-            for (int i = 0; i < Size; i++)
+            foreach (double coordinate in coordinates)
             {
-                hash = prime * hash + coordinates[i].GetHashCode();
+                hash = prime * hash + coordinate.GetHashCode();
             }
 
             return hash;
@@ -186,28 +190,28 @@ namespace Academits.Romanov.VectorTask
 
         public static Vector GetSum(Vector vector1, Vector vector2)
         {
-            Vector sumVector = new Vector(vector1);
-            sumVector.Add(vector2);
+            Vector sum = new Vector(vector1);
+            sum.Add(vector2);
 
-            return sumVector;
+            return sum;
         }
 
         public static Vector GetDifference(Vector vector1, Vector vector2)
         {
-            Vector differenceVector = new Vector(vector1);
-            differenceVector.Subtract(vector2);
+            Vector difference = new Vector(vector1);
+            difference.Subtract(vector2);
 
-            return differenceVector;
+            return difference;
         }
 
         public static double GetScalarProduct(Vector vector1, Vector vector2)
         {
-            int minLength = Math.Min(vector1.Size, vector2.Size);
+            int minSize = Math.Min(vector1.Size, vector2.Size);
             double scalarProduct = 0;
 
-            for (int i = 0; i < minLength; i++)
+            for (int i = 0; i < minSize; i++)
             {
-                scalarProduct += vector1[i] * vector2[i];
+                scalarProduct += vector1.coordinates[i] * vector2.coordinates[i];
             }
 
             return scalarProduct;
