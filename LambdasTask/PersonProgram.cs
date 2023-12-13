@@ -41,11 +41,11 @@
             Console.WriteLine("Средний возраст несовершеннолетних: " + minorsAverageAge);
             Console.WriteLine();
 
-            Dictionary<string, double> personsByNames = persons
+            Dictionary<string, double> personsByName = persons
                 .GroupBy(p => p.Name)
                 .ToDictionary(g => g.Key, g => g.Average(g => g.Age));
 
-            foreach (KeyValuePair<string, double> personsGroup in personsByNames)
+            foreach (KeyValuePair<string, double> personsGroup in personsByName)
             {
                 Console.WriteLine("Имя: {0}, средний возраст: {1}", personsGroup.Key, personsGroup.Value);
             }
