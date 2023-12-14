@@ -33,6 +33,10 @@
             Console.WriteLine("Список чисел после удаления первого элемента и элемента со значением 18: " + numbersList1);
             Console.WriteLine();
 
+            numbersList1.Add(2, 7);
+            numbersList1.Add(3, 31);
+            numbersList1.Add(4, 63);
+
             SinglyLinkedList<int> numbersList2 = numbersList1.Copy();
             numbersList2[1] = 10;
 

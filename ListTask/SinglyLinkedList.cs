@@ -24,25 +24,33 @@ namespace ListTask
             }
         }
 
-        private void CheckIndex(int index)
+        private void CheckIndexToAdd(int index)
         {
             if (index < 0 || index > Count)
+            {
+                throw new ArgumentOutOfRangeException(nameof(index), $"Индекс не должен быть меньше нуля и больше размера списка. Размер списка = {Count}. Индекс = {index}");
+            }
+        }
+
+        private void CheckIndexToAccess(int index)
+        {
+            if (index < 0 || index >= Count)
             {
                 throw new ArgumentOutOfRangeException(nameof(index), $"Индекс не должен быть меньше нуля и больше, либо равен размеру списка. Размер списка = {Count}. Индекс = {index}");
             }
         }
 
-        private void CheckList()
+        private void CheckListToNull()
         {
             if (head == null)
             {
-                throw new ArgumentNullException(nameof(head), "Список пуст.");
+                throw new InvalidOperationException("Список пуст.");
             }
         }
 
         private ListItem<T> GetItem(int index)
         {
-            CheckIndex(index);
+            CheckIndexToAccess(index);
 
             ListItem<T> item = head;
 
@@ -56,14 +64,14 @@ namespace ListTask
 
         public T GetFirst()
         {
-            CheckList();
+            CheckListToNull();
 
             return head.Data;
         }
 
         public T RemoveFirst()
         {
-            CheckList();
+            CheckListToNull();
 
             T removedData = head.Data;
             head = head.Next;
@@ -74,7 +82,7 @@ namespace ListTask
 
         public T Set(int index, T data)
         {
-            CheckIndex(index);
+            CheckIndexToAccess(index);
 
             T oldData = this[index];
             this[index] = data;
@@ -84,14 +92,15 @@ namespace ListTask
 
         public void AddFirst(T data)
         {
-            ListItem<T> item = new(data, head);
-            head = item;
+            head = new(data, head);
 
             Count++;
         }
 
         public void Add(int index, T data)
         {
+            CheckIndexToAdd(index);
+
             if (index == 0)
             {
                 AddFirst(data);
@@ -99,20 +108,15 @@ namespace ListTask
                 return;
             }
 
-            CheckIndex(index);
-
             ListItem<T> previousItem = GetItem(index - 1);
-            ListItem<T> item = new(data, previousItem.Next);
-            previousItem.Next = item;
+            previousItem.Next = new(data, previousItem.Next);
 
             Count++;
         }
 
         public T RemoveByIndex(int index)
         {
-            CheckIndex(index);
-
-            T removedData;
+            CheckIndexToAccess(index);
 
             if (index == 0)
             {
@@ -122,7 +126,7 @@ namespace ListTask
             ListItem<T> previousItem = GetItem(index - 1);
             ListItem<T> currentItem = previousItem.Next;
 
-            removedData = currentItem.Data;
+            T removedData = currentItem.Data;
             previousItem.Next = currentItem.Next;
 
             Count--;
@@ -134,24 +138,14 @@ namespace ListTask
         {
             for (ListItem<T> currentItem = head, previousItem = null; currentItem != null; previousItem = currentItem, currentItem = currentItem.Next)
             {
-                if (currentItem.Data.Equals(data))
+                if (Equals(currentItem.Data, data))
                 {
-                    if (previousItem == null)
-                    {
-                        RemoveFirst();
-                    }
-                    else
-                    {
-                        previousItem.Next = currentItem.Next;
-                    }
-
+                    previousItem.Next = currentItem.Next;
                     Count--;
 
                     return true;
                 }
             }
-
-            Count--;
 
             return false;
         }
@@ -177,26 +171,9 @@ namespace ListTask
         {
             SinglyLinkedList<T> copyList = new SinglyLinkedList<T>();
 
-            for (ListItem<T> item = head; copyList.Count < Count; item = item.Next)
+            for (ListItem<T> item = head; item != null; item = item.Next)
             {
-                ListItem<T> copyItem;
-
-                if (item.Next != null)
-                {
-                    ListItem<T> copyNext = new(item.Next.Data);
-                    copyItem = new(item.Data, copyNext);
-                }
-                else
-                {
-                    copyItem = new(item.Data);
-                }
-
-                if (copyList.Count == 0)
-                {
-                    copyList.head = copyItem;
-                }
-
-                copyList.Count++;
+                copyList.Add(copyList.Count, item.Data);
             }
 
             return copyList;
@@ -204,22 +181,19 @@ namespace ListTask
 
         public override string ToString()
         {
-            if (head == null)
+            if (Count == 0)
             {
                 return "[]";
             }
 
             StringBuilder stringBuilder = new StringBuilder();
             stringBuilder.Append('[');
-            int i = 0;
 
-            for (ListItem<T> currentItem = head; i < Count; currentItem = currentItem.Next)
+            for (ListItem<T> currentItem = head; currentItem != null; currentItem = currentItem.Next)
             {
                 stringBuilder
                     .Append(currentItem.Data)
                     .Append(", ");
-
-                i++;
             }
 
             return stringBuilder
