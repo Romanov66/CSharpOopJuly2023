@@ -5,12 +5,12 @@ namespace HashTableTask
 {
     internal class HashTable<T> : ICollection<T>
     {
+        public bool IsReadOnly => false;
+
         private List<T>?[] lists;
         private int modCount;
 
         public int Count { get; private set; }
-
-        public bool IsReadOnly => false;
 
         public HashTable()
         {
@@ -49,21 +49,18 @@ namespace HashTableTask
             StringBuilder stringBuilder = new();
             stringBuilder.Append('[');
 
-            for (int i = 0; i < lists.Length; i++)
+            foreach (List<T>? elements in lists)
             {
-                List<T>? elements = lists[i];
-
                 if (elements is null)
                 {
-                    stringBuilder.Append("[]");
+                    stringBuilder.Append("null, ");
                 }
                 else
                 {
                     stringBuilder
                     .Append('[')
                     .Append(string.Join(", ", elements))
-                    .Append(']')
-                    .Append(", ");
+                    .Append("], ");
                 }
             }
 
@@ -75,9 +72,9 @@ namespace HashTableTask
 
         private int GetIndex(T element)
         {
-            if (element == null)
+            if (element is null)
             {
-                return -1;
+                return 0;
             }
 
             return Math.Abs(element.GetHashCode() % lists.Length);
@@ -87,17 +84,12 @@ namespace HashTableTask
         {
             int index = GetIndex(element);
 
-            if (index < 0)
-            {
-                return;
-            }
-
             if (lists[index] is null)
             {
                 lists[index] = new List<T>();
             }
 
-            lists[index]?.Add(element);
+            lists[index]!.Add(element);
 
             Count++;
             modCount++;
@@ -105,24 +97,20 @@ namespace HashTableTask
 
         public void Clear()
         {
-            Array.Clear(lists);
+            if (Count > 0)
+            {
+                Array.Clear(lists);
 
-            Count = 0;
-            modCount++;
+                Count = 0;
+                modCount++;
+            }
         }
 
         public bool Contains(T element)
         {
             int index = GetIndex(element);
 
-            if (index < 0)
-            {
-                return false;
-            }
-
-            List<T>? elements = lists[index];
-
-            return elements != null ? elements.Contains(element) : false;
+            return lists[index] != null && lists[index]!.Contains(element);
         }
 
         public void CopyTo(T[] array, int arrayIndex)
@@ -139,18 +127,18 @@ namespace HashTableTask
 
             if (Count > array.Length - arrayIndex)
             {
-                throw new ArgumentException($"Копирование невозможно. Длинна массива с заданного индекса меньше, чем количество компонентов. Длинна массива с заданного индекса = {array.Length - arrayIndex}; количество компонентов = {Count}.", nameof(array));
+                throw new ArgumentException($"Копирование невозможно. Длина массива с заданного индекса меньше, чем количество компонентов. Длина массива с заданного индекса = {array.Length - arrayIndex}; количество компонентов = {Count}.", nameof(array));
             }
 
-            for (int i = 0; i < lists.Length; i++)
+            int startIndex = arrayIndex;
+
+            foreach (List<T>? elements in lists)
             {
-                List<T>? elements = lists[i];
-
-                if (elements != null)
+                if (elements is not null)
                 {
-                    Array.Copy(elements.ToArray(), 0, array, arrayIndex, elements.Count);
+                    elements.CopyTo(array, startIndex);
 
-                    arrayIndex += elements.Count;
+                    startIndex += elements.Count;
                 }
             }
         }
@@ -159,22 +147,15 @@ namespace HashTableTask
         {
             int index = GetIndex(element);
 
-            if (index < 0)
-            {
-                return false;
-            }
-
-            List<T>? elements = lists[index];
-
-            bool isRemoved = elements != null ? elements.Remove(element) : false;
-
-            if (isRemoved)
+            if (lists[index] != null && lists[index]!.Remove(element))
             {
                 Count--;
                 modCount++;
+
+                return true;
             }
 
-            return isRemoved;
+            return false;
         }
 
         public IEnumerator<T> GetEnumerator()
