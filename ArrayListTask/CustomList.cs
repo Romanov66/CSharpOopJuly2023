@@ -76,9 +76,9 @@ namespace ArrayListTask
 
         private void CheckIndex(int index)
         {
-            if (index < 0 || index >= Capacity)
+            if (index < 0 || index > Count - 1)
             {
-                throw new ArgumentOutOfRangeException(nameof(index), $"Индекс не должен быть меньше нуля и больше, либо равен вместимости списка. Размер списка = {Capacity}. Индекс = {index}");
+                throw new ArgumentOutOfRangeException(nameof(index), $"Индекс должен быть больше нуля и меньшне количества элементов списка. Размер списка = {Count}. Индекс = {index}");
             }
         }
 
@@ -143,19 +143,14 @@ namespace ArrayListTask
 
         public bool Contains(T item)
         {
-            if (IndexOf(item) < 0)
-            {
-                return false;
-            }
-
-            return true;
+            return IndexOf(item) > 0;
         }
 
-        public void CopyTo(T[] items, int startIndex)
+        public void CopyTo(T[] array, int startIndex)
         {
-            if (items is null)
+            if (array is null)
             {
-                throw new ArgumentNullException(nameof(items), "Массив не должен быть null");
+                throw new ArgumentNullException(nameof(array), "Массив не должен быть null");
             }
 
             if (startIndex < 0)
@@ -163,21 +158,16 @@ namespace ArrayListTask
                 throw new ArgumentOutOfRangeException(nameof(startIndex), $"Индекс не должен быть меньше нуля. Индекс = {startIndex}");
             }
 
-            if (Count > items.Length - startIndex)
+            if (Count > array.Length - startIndex)
             {
-                throw new ArgumentException($"Копирование невозможно. Длинна массива с заданного индекса меньше, чем количество элементов списка. Длинна массива с заданного индекса = {items.Length - startIndex}; количество элементов = {Count}.", nameof(items));
+                throw new ArgumentException($"Копирование невозможно. Длина массива с заданного индекса меньше, чем количество элементов списка. Длина массива с заданного индекса = {array.Length - startIndex}; количество элементов = {Count}.", nameof(array));
             }
 
-            Array.Copy(this.items, 0, items, startIndex, Count);
+            Array.Copy(items, 0, array, startIndex, Count);
         }
 
         public bool Remove(T item)
         {
-            if (IndexOf(item) < 0)
-            {
-                return false;
-            }
-
             RemoveAt(IndexOf(item));
 
             return true;
@@ -205,19 +195,21 @@ namespace ArrayListTask
 
         public void Insert(int index, T item)
         {
-            CheckIndex(index);
-
-            if (Count == Capacity)
-            {
-                IncreaseCapacity();
-            }
-
             if (index == Count)
             {
+                if (Count == Capacity)
+                {
+                    IncreaseCapacity();
+                }
+
                 items[index] = item;
+                Count++;
+                modCount++;
 
                 return;
             }
+
+            CheckIndex(index);
 
             Array.Copy(items, index, items, index + 1, Count - index);
 
@@ -264,7 +256,7 @@ namespace ArrayListTask
                 return true;
             }
 
-            if (obj is null || this is null || GetType() != obj.GetType())
+            if (obj is null || GetType() != obj.GetType())
             {
                 return false;
             }
@@ -278,7 +270,7 @@ namespace ArrayListTask
 
             for (int i = 0; i < Count; i++)
             {
-                if (!items[i].Equals(list.items[i]))
+                if (!Equals(items[i], list.items[i]))
                 {
                     return false;
                 }
@@ -294,7 +286,11 @@ namespace ArrayListTask
 
             for (int i = 0; i < Count; i++)
             {
-                if (items[i] is not null)
+                if (items[i] is null)
+                {
+                    hash = prime * hash;
+                }
+                else
                 {
                     hash = prime * hash + items[i].GetHashCode();
                 }

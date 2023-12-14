@@ -78,7 +78,7 @@
             Console.WriteLine("Индекс элемента 5 = " + numbersList.IndexOf(5));
             Console.WriteLine("Индекс элемента 35 = " + numbersList.IndexOf(35));
 
-            numbersList.Insert(5, 25);
+            numbersList.Insert(10, 25);
 
             Console.WriteLine();
             Console.WriteLine("Характеристики списка после применения метода Insert: " + numbersList);
