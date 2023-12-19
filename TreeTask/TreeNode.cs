@@ -8,9 +8,9 @@
 
         public T Data { get; set; }
 
-        public TreeNode(T value)
+        public TreeNode(T data)
         {
-            Data = value;
+            Data = data;
         }
     }
 }

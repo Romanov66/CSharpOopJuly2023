@@ -2,8 +2,8 @@
 {
     public class BinarySearchTree<T>
     {
-        private TreeNode<T> root;
         private readonly IComparer<T> comparator;
+        private TreeNode<T> root;
 
         public int Count { get; private set; }
 
@@ -20,6 +20,16 @@
         {
             if (comparator is null)
             {
+                if (data1 == null)
+                {
+                    if (data2 == null)
+                    {
+                        return 0;
+                    }
+
+                    return -1;
+                }
+
                 IComparable<T> comparable = (IComparable<T>)data1;
 
                 return comparable.CompareTo(data2);
@@ -39,17 +49,14 @@
             }
 
             TreeNode<T> currentNode = root;
-            TreeNode<T> newNode = new TreeNode<T>(data);
 
             while (true)
             {
-                int comparisonResult = Compare(currentNode.Data, newNode.Data);
-
-                if (comparisonResult > 0)
+                if (Compare(currentNode.Data, data) > 0)
                 {
                     if (currentNode.Left is null)
                     {
-                        currentNode.Left = newNode;
+                        currentNode.Left = new TreeNode<T>(data);
                         Count++;
 
                         return;
@@ -61,7 +68,7 @@
                 {
                     if (currentNode.Right is null)
                     {
-                        currentNode.Right = newNode;
+                        currentNode.Right = new TreeNode<T>(data);
                         Count++;
 
                         return;
@@ -139,12 +146,8 @@
                 if (deletedNodeParent is null)
                 {
                     root = null;
-                    Count = 0;
-
-                    return true;
                 }
-
-                if (deletedNode == deletedNodeParent.Left)
+                else if (deletedNode == deletedNodeParent.Left)
                 {
                     deletedNodeParent.Left = null;
                 }
@@ -160,25 +163,13 @@
 
             if (deletedNode.Left is null || deletedNode.Right is null)
             {
-                if (deletedNodeParent is null)
+                if (deletedNode.Left is null)
                 {
-                    if (deletedNode.Left is null)
+                    if (deletedNodeParent is null)
                     {
                         root = deletedNode.Right;
                     }
-                    else
-                    {
-                        root = deletedNode.Left;
-                    }
-
-                    Count--;
-
-                    return true;
-                }
-
-                if (deletedNode.Left is null)
-                {
-                    if (deletedNode == deletedNodeParent.Left)
+                    else if (deletedNode == deletedNodeParent.Left)
                     {
                         deletedNodeParent.Left = deletedNode.Right;
                     }
@@ -189,7 +180,11 @@
                 }
                 else
                 {
-                    if (deletedNode == deletedNodeParent.Left)
+                    if (deletedNodeParent is null)
+                    {
+                        root = deletedNode.Left;
+                    }
+                    else if (deletedNode == deletedNodeParent.Left)
                     {
                         deletedNodeParent.Left = deletedNode.Left;
                     }
@@ -205,23 +200,16 @@
             }
 
             TreeNode<T> minLeftNodeParent = deletedNode.Right;
-            TreeNode<T> minLeftNode = minLeftNodeParent.Left;
 
-            if (minLeftNode is null)
+            if (minLeftNodeParent.Left is null)
             {
-                if (deletedNodeParent is null)
-                {
-                    minLeftNodeParent.Left = root.Left;
-
-                    root = minLeftNodeParent;
-                    Count--;
-
-                    return true;
-                }
-
                 minLeftNodeParent.Left = deletedNode.Left;
 
-                if (deletedNode == deletedNodeParent.Left)
+                if (deletedNodeParent is null)
+                {
+                    root = minLeftNodeParent;
+                }
+                else if (deletedNode == deletedNodeParent.Left)
                 {
                     deletedNodeParent.Left = minLeftNodeParent;
                 }
@@ -235,33 +223,23 @@
                 return true;
             }
 
+            TreeNode<T> minLeftNode = minLeftNodeParent.Left;
+
             while (minLeftNode.Left is not null)
             {
                 minLeftNodeParent = minLeftNode;
                 minLeftNode = minLeftNode.Left;
             }
 
-            if (minLeftNode.Right is not null)
-            {
-                minLeftNodeParent.Left = minLeftNode.Right;
-            }
-            else
-            {
-                minLeftNodeParent.Left = null;
-            }
-
+            minLeftNodeParent.Left = minLeftNode.Right;
             minLeftNode.Left = deletedNode.Left;
             minLeftNode.Right = deletedNode.Right;
 
             if (deletedNodeParent is null)
             {
                 root = minLeftNode;
-                Count--;
-
-                return true;
             }
-
-            if (deletedNode == deletedNodeParent.Left)
+            else if (deletedNode == deletedNodeParent.Left)
             {
                 deletedNodeParent.Left = minLeftNode;
             }
