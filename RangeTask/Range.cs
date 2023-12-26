@@ -44,17 +44,22 @@
 
         public Range[] GetDifference(Range range)
         {
+            if (From >= range.To || To <= range.From)
+            {
+                return new Range[] { new(From, To) };
+            }
+
             if (From < range.From && To > range.To)
             {
                 return new Range[] { new(From, range.From), new(range.To, To) };
             }
 
-            if (From == range.From && To > range.To)
+            if (From >= range.From && To > range.To)
             {
                 return new Range[] { new(range.To, To) };
             }
 
-            if (From < range.From && To == range.To)
+            if (From < range.From && To <= range.To)
             {
                 return new Range[] { new(From, range.From) };
             }
