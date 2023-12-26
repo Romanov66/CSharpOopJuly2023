@@ -19,7 +19,7 @@
             }
             catch (FileNotFoundException e)
             {
-                Console.WriteLine("Файл с таким названием отсутствует: " + e);
+                Console.WriteLine("Файл с таким названием отсутствует.");
             }
 
             Console.WriteLine("А вы могли бы?");
