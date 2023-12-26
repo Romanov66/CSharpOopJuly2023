@@ -12,10 +12,14 @@ namespace ListTask
         {
             get
             {
+                CheckIndexForAccess(index);
+
                 return GetItem(index).Data;
             }
             set
             {
+                CheckIndexForAccess(index);
+
                 GetItem(index).Data = value;
             }
         }
