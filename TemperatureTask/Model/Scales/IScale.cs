@@ -4,10 +4,10 @@
     {
         string GetScaleName();
 
-        double ConvertTo(double degree, FahrenheitScale scale);
+        double Convert(double degree, FahrenheitScale scale);
 
-        double ConvertTo(double degree, CelsiusScale scale);
+        double Convert(double degree, CelsiusScale scale);
 
-        double ConvertTo(double degree, KelvinScale scale);
+        double Convert(double degree, KelvinScale scale);
     }
 }
