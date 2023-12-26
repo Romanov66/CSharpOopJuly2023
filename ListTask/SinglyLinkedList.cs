@@ -12,19 +12,15 @@ namespace ListTask
         {
             get
             {
-                ListItem<T> item = GetItem(index);
-
-                return item.Data;
+                return GetItem(index).Data;
             }
             set
             {
-                ListItem<T> item = GetItem(index);
-
-                item.Data = value;
+                GetItem(index).Data = value;
             }
         }
 
-        private void CheckIndexToAdd(int index)
+        private void CheckIndexForAdding(int index)
         {
             if (index < 0 || index > Count)
             {
@@ -32,7 +28,7 @@ namespace ListTask
             }
         }
 
-        private void CheckIndexToAccess(int index)
+        private void CheckIndexForAccess(int index)
         {
             if (index < 0 || index >= Count)
             {
@@ -40,7 +36,7 @@ namespace ListTask
             }
         }
 
-        private void CheckListToNull()
+        private void CheckIsListEmpty()
         {
             if (head == null)
             {
@@ -50,8 +46,6 @@ namespace ListTask
 
         private ListItem<T> GetItem(int index)
         {
-            CheckIndexToAccess(index);
-
             ListItem<T> item = head;
 
             for (int i = 0; i < index; i++)
@@ -64,14 +58,14 @@ namespace ListTask
 
         public T GetFirst()
         {
-            CheckListToNull();
+            CheckIsListEmpty();
 
             return head.Data;
         }
 
         public T RemoveFirst()
         {
-            CheckListToNull();
+            CheckIsListEmpty();
 
             T removedData = head.Data;
             head = head.Next;
@@ -82,7 +76,7 @@ namespace ListTask
 
         public T Set(int index, T data)
         {
-            CheckIndexToAccess(index);
+            CheckIndexForAccess(index);
 
             T oldData = this[index];
             this[index] = data;
@@ -99,7 +93,7 @@ namespace ListTask
 
         public void Add(int index, T data)
         {
-            CheckIndexToAdd(index);
+            CheckIndexForAdding(index);
 
             if (index == 0)
             {
@@ -116,7 +110,7 @@ namespace ListTask
 
         public T RemoveByIndex(int index)
         {
-            CheckIndexToAccess(index);
+            CheckIndexForAccess(index);
 
             if (index == 0)
             {
@@ -140,7 +134,15 @@ namespace ListTask
             {
                 if (Equals(currentItem.Data, data))
                 {
-                    previousItem.Next = currentItem.Next;
+                    if (previousItem == null)
+                    {
+                        head = head.Next;
+                    }
+                    else
+                    {
+                        previousItem.Next = currentItem.Next;
+                    }
+
                     Count--;
 
                     return true;
@@ -169,12 +171,19 @@ namespace ListTask
 
         public SinglyLinkedList<T> Copy()
         {
-            SinglyLinkedList<T> copyList = new SinglyLinkedList<T>();
+            CheckIsListEmpty();
 
-            for (ListItem<T> item = head; item != null; item = item.Next)
+            SinglyLinkedList<T> copyList = new()
             {
-                copyList.Add(copyList.Count, item.Data);
+                head = new(head.Data)
+            };
+
+            for (ListItem<T> item = head, copyItem = copyList.head; item.Next != null; item = item.Next, copyItem = copyItem.Next)
+            {
+                copyItem.Next = new(item.Next.Data);
             }
+
+            copyList.Count = Count;
 
             return copyList;
         }
@@ -186,7 +195,7 @@ namespace ListTask
                 return "[]";
             }
 
-            StringBuilder stringBuilder = new StringBuilder();
+            StringBuilder stringBuilder = new();
             stringBuilder.Append('[');
 
             for (ListItem<T> currentItem = head; currentItem != null; currentItem = currentItem.Next)
@@ -197,9 +206,9 @@ namespace ListTask
             }
 
             return stringBuilder
-                .Remove(stringBuilder.Length - 2, 2)
-                .Append(']')
-                .ToString();
+                       .Remove(stringBuilder.Length - 2, 2)
+                       .Append(']')
+                       .ToString();
         }
     }
 }
