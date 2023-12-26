@@ -5,10 +5,10 @@ namespace HashTableTask
 {
     internal class HashTable<T> : ICollection<T>
     {
-        public bool IsReadOnly => false;
-
-        private List<T>?[] lists;
+        private readonly List<T>?[] lists;
         private int modCount;
+
+        public bool IsReadOnly => false;
 
         public int Count { get; private set; }
 
@@ -29,14 +29,7 @@ namespace HashTableTask
 
         public HashTable(ICollection<T> collection)
         {
-            if (collection.Count <= 10)
-            {
-                lists = new List<T>[10];
-            }
-            else
-            {
-                lists = new List<T>[collection.Count];
-            }
+            lists = new List<T>[Math.Max(10, collection.Count)];
 
             foreach (T e in collection)
             {
@@ -49,25 +42,25 @@ namespace HashTableTask
             StringBuilder stringBuilder = new();
             stringBuilder.Append('[');
 
-            foreach (List<T>? elements in lists)
+            foreach (List<T>? list in lists)
             {
-                if (elements is null)
+                if (list is null)
                 {
                     stringBuilder.Append("null, ");
                 }
                 else
                 {
                     stringBuilder
-                    .Append('[')
-                    .Append(string.Join(", ", elements))
-                    .Append("], ");
+                        .Append('[')
+                        .AppendJoin(", ", list)
+                        .Append("], ");
                 }
             }
 
             return stringBuilder
-                .Remove(stringBuilder.Length - 2, 2)
-                .Append(']')
-                .ToString();
+                       .Remove(stringBuilder.Length - 2, 2)
+                       .Append(']')
+                       .ToString();
         }
 
         private int GetIndex(T element)
@@ -132,13 +125,13 @@ namespace HashTableTask
 
             int startIndex = arrayIndex;
 
-            foreach (List<T>? elements in lists)
+            foreach (List<T>? list in lists)
             {
-                if (elements is not null)
+                if (list is not null)
                 {
-                    elements.CopyTo(array, startIndex);
+                    list.CopyTo(array, startIndex);
 
-                    startIndex += elements.Count;
+                    startIndex += list.Count;
                 }
             }
         }
@@ -162,15 +155,15 @@ namespace HashTableTask
         {
             int initialModCount = modCount;
 
-            foreach (List<T>? elements in lists)
+            foreach (List<T>? list in lists)
             {
-                if (elements != null)
+                if (list != null)
                 {
-                    foreach (T element in elements)
+                    foreach (T element in list)
                     {
                         if (initialModCount != modCount)
                         {
-                            throw new InvalidOperationException("Список изменен.");
+                            throw new InvalidOperationException("Таблица изменена.");
                         }
 
                         yield return element;
