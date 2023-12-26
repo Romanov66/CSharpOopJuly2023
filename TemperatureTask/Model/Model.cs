@@ -8,7 +8,7 @@ namespace TemperatureTask.Model
 
         public static double CalculateTemperature(double dergee, IScale scaleFrom, IScale scaleTo)
         {
-            return scaleFrom.ConvertTo(dergee, scaleTo);
+            return scaleFrom.Convert(dergee, scaleTo);
         }
 
         public static IScale GetScale(string data)
