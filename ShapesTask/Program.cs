@@ -26,7 +26,7 @@ namespace ShapesTask
                 return null;
             }
 
-            Array.Sort(shapes, new AreasComparer());
+            Array.Sort(shapes, new ShapeAreaComparer());
 
             return shapes[^1];
         }
@@ -38,7 +38,7 @@ namespace ShapesTask
                 return null;
             }
 
-            Array.Sort(shapes, new PerimetersComparer());
+            Array.Sort(shapes, new ShapePerimeterComparer());
 
             return shapes[^2];
         }
