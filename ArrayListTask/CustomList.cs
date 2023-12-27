@@ -76,9 +76,9 @@ namespace ArrayListTask
 
         private void CheckIndex(int index)
         {
-            if (index < 0 || index > Count - 1)
+            if (index < 0 || index >= Count)
             {
-                throw new ArgumentOutOfRangeException(nameof(index), $"Индекс должен быть больше нуля и меньшне количества элементов списка. Размер списка = {Count}. Индекс = {index}");
+                throw new ArgumentOutOfRangeException(nameof(index), $"Индекс должен быть больше нуля и больше, либо равен размеру списка. Размер списка = {Count}. Индекс = {index}");
             }
         }
 
@@ -101,8 +101,8 @@ namespace ArrayListTask
 
             return stringBuilder
                 .Remove(stringBuilder.Length - 2, 2)
-                .Append(']').
-                 ToString();
+                .Append(']')
+                .ToString();
         }
 
         public void Add(T item)
@@ -143,7 +143,7 @@ namespace ArrayListTask
 
         public bool Contains(T item)
         {
-            return IndexOf(item) > 0;
+            return IndexOf(item) < 0;
         }
 
         public void CopyTo(T[] array, int startIndex)
@@ -168,7 +168,14 @@ namespace ArrayListTask
 
         public bool Remove(T item)
         {
-            RemoveAt(IndexOf(item));
+            int index = IndexOf(item);
+
+            if (index < 0)
+            {
+                return false;
+            }
+
+            RemoveAt(index);
 
             return true;
         }
@@ -197,14 +204,7 @@ namespace ArrayListTask
         {
             if (index == Count)
             {
-                if (Count == Capacity)
-                {
-                    IncreaseCapacity();
-                }
-
-                items[index] = item;
-                Count++;
-                modCount++;
+                Add(item);
 
                 return;
             }
@@ -288,11 +288,11 @@ namespace ArrayListTask
             {
                 if (items[i] is null)
                 {
-                    hash = prime * hash;
+                    hash *= prime;
                 }
                 else
                 {
-                    hash = prime * hash + items[i].GetHashCode();
+                    hash *= prime + items[i].GetHashCode();
                 }
             }
 
