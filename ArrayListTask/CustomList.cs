@@ -78,7 +78,7 @@ namespace ArrayListTask
         {
             if (index < 0 || index >= Count)
             {
-                throw new ArgumentOutOfRangeException(nameof(index), $"Индекс должен быть больше нуля и больше, либо равен размеру списка. Размер списка = {Count}. Индекс = {index}");
+                throw new ArgumentOutOfRangeException(nameof(index), $"Индекс не должен быть меньше нуля и быть больше, либо равен количеству элементов списка. Количество элементов списка = {Count}. Индекс = {index}");
             }
         }
 
@@ -143,7 +143,7 @@ namespace ArrayListTask
 
         public bool Contains(T item)
         {
-            return IndexOf(item) < 0;
+            return IndexOf(item) != -1;
         }
 
         public void CopyTo(T[] array, int startIndex)
@@ -202,14 +202,17 @@ namespace ArrayListTask
 
         public void Insert(int index, T item)
         {
+            if (index < 0 || index > Count)
+            {
+                throw new ArgumentOutOfRangeException(nameof(index), $"Индекс не должен быть меньше нуля и быть больше количества элементов списка. Количество элементов списка = {Count}. Индекс = {index}");
+            }
+
             if (index == Count)
             {
                 Add(item);
 
                 return;
             }
-
-            CheckIndex(index);
 
             Array.Copy(items, index, items, index + 1, Count - index);
 
@@ -292,7 +295,7 @@ namespace ArrayListTask
                 }
                 else
                 {
-                    hash *= prime + items[i].GetHashCode();
+                    hash = hash * prime + items[i].GetHashCode();
                 }
             }
 
