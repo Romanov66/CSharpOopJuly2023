@@ -130,16 +130,8 @@
                     break;
                 }
 
-                if (comparisonResult > 0)
-                {
-                    removedNodeParent = removedNode;
-                    removedNode = removedNodeParent.Left;
-                }
-                else
-                {
-                    removedNodeParent = removedNode;
-                    removedNode = removedNodeParent.Right;
-                }
+                removedNodeParent = removedNode;
+                removedNode = comparisonResult > 0 ? removedNode.Left : removedNode.Right;
             }
 
             if (removedNode is null)
@@ -169,28 +161,19 @@
 
             if (removedNode.Left is null || removedNode.Right is null)
             {
-                TreeNode<T> childRemovedNote;
-
-                if (removedNode.Left is null)
-                {
-                    childRemovedNote = removedNode.Right;
-                }
-                else
-                {
-                    childRemovedNote = removedNode.Left;
-                }
+                TreeNode<T> removedNodeChild = removedNode.Left is null ? removedNode.Right : removedNode.Left;
 
                 if (removedNodeParent is null)
                 {
-                    root = childRemovedNote;
+                    root = removedNodeChild;
                 }
                 else if (removedNode == removedNodeParent.Left)
                 {
-                    removedNodeParent.Left = childRemovedNote;
+                    removedNodeParent.Left = removedNodeChild;
                 }
                 else
                 {
-                    removedNodeParent.Right = childRemovedNote;
+                    removedNodeParent.Right = removedNodeChild;
                 }
 
                 Count--;
