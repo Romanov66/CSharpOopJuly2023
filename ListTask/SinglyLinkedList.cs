@@ -82,8 +82,15 @@ namespace ListTask
         {
             CheckIndexForAccess(index);
 
-            T oldData = this[index];
-            this[index] = data;
+            ListItem<T> item = head;
+
+            for (int i = 0; i < index; i++)
+            {
+                item = item.Next;
+            }
+
+            T oldData = item.Data;
+            item.Data = data;
 
             return oldData;
         }
@@ -163,28 +170,36 @@ namespace ListTask
                 return;
             }
 
-            for (ListItem<T> currentItem = head.Next, previousItem = head; currentItem != null; previousItem = currentItem, currentItem = currentItem.Next)
-            {
-                previousItem.Next = currentItem.Next;
-                currentItem.Next = head;
-                head = currentItem;
+            ListItem<T> previousItem = null;
+            ListItem<T> currentItem = head;
 
-                currentItem = previousItem;
+            while (currentItem.Next != null)
+            {
+                ListItem<T> nextItem = currentItem.Next;
+                currentItem.Next = previousItem;
+                previousItem = currentItem;
+                currentItem = nextItem;
             }
+
+            currentItem.Next = previousItem;
+            head = currentItem;
         }
 
         public SinglyLinkedList<T> Copy()
         {
-            CheckIsListEmpty();
+            if (head is null)
+            {
+                return new SinglyLinkedList<T>();
+            }
 
             SinglyLinkedList<T> copyList = new()
             {
                 head = new(head.Data)
             };
 
-            for (ListItem<T> item = head, copyItem = copyList.head; item.Next != null; item = item.Next, copyItem = copyItem.Next)
+            for (ListItem<T> item = head.Next, copyItem = copyList.head; item != null; item = item.Next, copyItem = copyItem.Next)
             {
-                copyItem.Next = new(item.Next.Data);
+                copyItem.Next = new(item.Data);
             }
 
             copyList.Count = Count;
@@ -202,10 +217,10 @@ namespace ListTask
             StringBuilder stringBuilder = new();
             stringBuilder.Append('[');
 
-            for (ListItem<T> currentItem = head; currentItem != null; currentItem = currentItem.Next)
+            for (ListItem<T> item = head; item != null; item = item.Next)
             {
                 stringBuilder
-                    .Append(currentItem.Data)
+                    .Append(item.Data)
                     .Append(", ");
             }
 
