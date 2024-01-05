@@ -61,9 +61,9 @@ namespace Academits.Romanov.VectorTask
 
         public Vector(int size, double[] coordinates)
         {
-            if (size <= 0 || size < coordinates.Length)
+            if (size <= 0)
             {
-                throw new ArgumentException($"Размерность вектора не может быть <= 0, либо меньше длины массива! Размерность вектора = {size}, длина массива: {coordinates.Length}", nameof(size));
+                throw new ArgumentException($"Размерность вектора не может быть <= 0! Размерность вектора = {size}", nameof(size));
             }
 
             this.coordinates = new double[size];
